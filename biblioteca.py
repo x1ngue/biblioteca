@@ -142,3 +142,24 @@ def deletar_usuario():
             print(f"Usuário com ID {id_usuario} não encontrado.")
     except pymongo.errors.OperationFailure as e:
         print(f"Erro ao deletar usuário: {e}")
+
+def emprestar_livro():
+    livro_id = input("Digite o ID do livro a ser emprestado: ")
+    usuario_id = input("Digite o ID do usuário: ")
+    livro = livros_collection.find_one({"_id": ObjectId(livro_id)})
+
+    if livro and livro['disponivel'] and livro['quantidade'] > 0:
+        emprestimo = {
+            "livro_id": ObjectId(livro_id),
+            "usuario_id": ObjectId(usuario_id),
+            "data_emprestimo": "2024-09-21",
+            "devolvido": False
+        }
+        emprestimos_collection.insert_one(emprestimo)
+        livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$inc": {"quantidade": -1}})
+        livro_atualizado = livros_collection.find_one({"_id": ObjectId(livro_id)})
+        if livro_atualizado['quantidade'] == 0:
+            livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$set": {"disponivel": False}})
+        print(f"Livro ID {livro_id} emprestado ao usuário ID {usuario_id}.")
+    else:
+        print("Livro não disponível para empréstimo.")
