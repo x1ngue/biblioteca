@@ -182,3 +182,48 @@ def listar_emprestimos():
     emprestimos = emprestimos_collection.find()
     for emprestimo in emprestimos:
         print(f"ID Empréstimo: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Usuário ID: {emprestimo['usuario_id']}, Devolvido: {emprestimo['devolvido']}")
+
+while True:
+    print("\nMenu Biblioteca:")
+    print("1. Adicionar Livro")
+    print("2. Listar Livros")
+    print("3. Atualizar Livro")
+    print("4. Excluir Livro")
+    print("5. Cadastrar Usuário")
+    print("6. Listar Usuários")
+    print("7. Atualizar Usuário")
+    print("8. Deletar Usuário")
+    print("9. Emprestar Livro")
+    print("10. Devolver Livro")
+    print("11. Listar Empréstimos")
+    print("12. Sair")
+
+    opcao = input("Escolha uma opção: ")
+
+    if opcao == '1':
+        adicionar_livro()
+    elif opcao == '2':
+        listar_livros()
+    elif opcao == '3':
+        atualizar_livro()
+    elif opcao == '4':
+        excluir_livro()
+    elif opcao == '5':
+        cadastrar_usuario()
+    elif opcao == '6':
+        listar_usuarios()
+    elif opcao == '7':
+        atualizar_usuario()
+    elif opcao == '8':
+        deletar_usuario()
+    elif opcao == '9':
+        emprestar_livro()
+    elif opcao == '10':
+        devolver_livro()
+    elif opcao == '11':
+        listar_emprestimos()
+    elif opcao == '12':
+        print("Encerrando o sistema.")
+        break
+    else:
+        print("Opção inválida. Tente novamente.")
