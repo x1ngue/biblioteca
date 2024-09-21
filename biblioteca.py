@@ -163,3 +163,17 @@ def emprestar_livro():
         print(f"Livro ID {livro_id} emprestado ao usuário ID {usuario_id}.")
     else:
         print("Livro não disponível para empréstimo.")
+
+def devolver_livro():
+    emprestimo_id = input("Digite o ID do empréstimo: ")
+    emprestimo = emprestimos_collection.find_one({"_id": ObjectId(emprestimo_id)})
+
+    if emprestimo and not emprestimo['devolvido']:
+        livros_collection.update_one({"_id": emprestimo['livro_id']}, {"$inc": {"quantidade": 1}})
+        emprestimos_collection.update_one({"_id": ObjectId(emprestimo_id)}, {"$set": {"devolvido": True}})
+        livro = livros_collection.find_one({"_id": emprestimo['livro_id']})
+        if livro['quantidade'] > 0:
+            livros_collection.update_one({"_id": livro['_id']}, {"$set": {"disponivel": True}})
+        print(f"Empréstimo ID {emprestimo_id} finalizado e livro devolvido.")
+    else:
+        print("Empréstimo já finalizado ou inexistente.")  
