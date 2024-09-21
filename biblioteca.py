@@ -41,4 +41,10 @@ def adicionar_livro():
     }
 
     livros_collection.insert_one(livro)
-    print(f"Livro '{titulo}' adicionado com sucesso.")  
+    print(f"Livro '{titulo}' adicionado com sucesso.")
+
+def listar_livros():
+    livros = livros_collection.find()
+    for livro in livros:
+        print(f"ID: {livro['_id']}, Título: {livro['titulo']}, Autor: {livro['autor']}, Gênero: {livro['genero']}, "
+              f"Ano: {livro['ano']}, ISBN: {livro['isbn']}, Quantidade: {livro['quantidade']}, Disponível: {livro['disponivel']}")
