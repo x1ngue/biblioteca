@@ -48,3 +48,27 @@ def listar_livros():
     for livro in livros:
         print(f"ID: {livro['_id']}, Título: {livro['titulo']}, Autor: {livro['autor']}, Gênero: {livro['genero']}, "
               f"Ano: {livro['ano']}, ISBN: {livro['isbn']}, Quantidade: {livro['quantidade']}, Disponível: {livro['disponivel']}")
+        
+def atualizar_livro():
+    livro_id = input("Digite o ID do livro que deseja atualizar: ")
+    novos_dados = {}
+    titulo = input("Novo título (deixe em branco para manter o atual): ")
+    autor = input("Novo autor (deixe em branco para manter o atual): ")
+    genero = input("Novo gênero (deixe em branco para manter o atual): ")
+    ano = input("Novo ano de publicação (deixe em branco para manter o atual): ")
+    quantidade = input("Nova quantidade de exemplares (deixe em branco para manter o atual): ")
+
+    if titulo:
+        novos_dados['titulo'] = titulo
+    if autor:
+        novos_dados['autor'] = autor
+    if genero:
+        novos_dados['genero'] = genero
+    if ano:
+        novos_dados['ano'] = int(ano)
+    if quantidade:
+        novos_dados['quantidade'] = int(quantidade)
+        novos_dados['disponivel'] = int(quantidade) > 0  # Atualizar disponibilidade com base na quantidade
+
+    livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$set": novos_dados})
+    print(f"Livro ID {livro_id} atualizado com sucesso.")
