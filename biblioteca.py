@@ -176,4 +176,9 @@ def devolver_livro():
             livros_collection.update_one({"_id": livro['_id']}, {"$set": {"disponivel": True}})
         print(f"Empréstimo ID {emprestimo_id} finalizado e livro devolvido.")
     else:
-        print("Empréstimo já finalizado ou inexistente.")  
+        print("Empréstimo já finalizado ou inexistente.")
+
+def listar_emprestimos():
+    emprestimos = emprestimos_collection.find()
+    for emprestimo in emprestimos:
+        print(f"ID Empréstimo: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Usuário ID: {emprestimo['usuario_id']}, Devolvido: {emprestimo['devolvido']}")
