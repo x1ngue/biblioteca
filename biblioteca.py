@@ -113,4 +113,20 @@ def listar_usuarios():
         else:
             documento = "Não informado"
         
-        print(f"ID: {usuario['_id']}, Nome: {usuario['nome']}, E-mail: {usuario['email']}, Data de Nascimento: {data_nascimento}, Documento: {documento}")       
+        print(f"ID: {usuario['_id']}, Nome: {usuario['nome']}, E-mail: {usuario['email']}, Data de Nascimento: {data_nascimento}, Documento: {documento}")
+
+def atualizar_usuario():
+    id_usuario = input("Digite o ID do usuário a ser atualizado: ")
+    email = input("Digite o novo email do usuário: ")
+
+    query = {"_id": ObjectId(id_usuario)}
+    update = {"$set": {"email": email}}
+
+    try:
+        result = usuarios_collection.update_one(query, update)
+        if result.modified_count == 1:
+            print(f"Usuário com ID {id_usuario} atualizado com sucesso!")
+        else:
+            print(f"Usuário com ID {id_usuario} não encontrado.")
+    except pymongo.errors.OperationFailure as e:
+        print(f"Erro ao atualizar usuário: {e}")
