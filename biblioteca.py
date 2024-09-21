@@ -25,7 +25,6 @@ def adicionar_livro():
     isbn = input("Digite o ISBN (código único): ")
     quantidade = int(input("Digite a quantidade de exemplares disponíveis: "))
 
-    # Verificar se o ISBN já existe
     if livros_collection.find_one({"isbn": isbn}):
         print(f"Erro: Já existe um livro cadastrado com o ISBN {isbn}.")
         return
@@ -68,7 +67,7 @@ def atualizar_livro():
         novos_dados['ano'] = int(ano)
     if quantidade:
         novos_dados['quantidade'] = int(quantidade)
-        novos_dados['disponivel'] = int(quantidade) > 0  # Atualizar disponibilidade com base na quantidade
+        novos_dados['disponivel'] = int(quantidade) > 0 
 
     livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$set": novos_dados})
     print(f"Livro ID {livro_id} atualizado com sucesso.")
@@ -77,3 +76,26 @@ def excluir_livro():
     livro_id = input("Digite o ID do livro que deseja excluir: ")
     livros_collection.delete_one({"_id": ObjectId(livro_id)})
     print(f"Livro ID {livro_id} excluído com sucesso.")
+
+def cadastrar_usuario():
+    nome = input("Digite o nome do usuário: ")
+    email = input("Digite o email do usuário: ")
+    data_nascimento = input("Digite a data de nascimento (dd/mm/aaaa): ")
+    documento = input("Digite o número de documento (CPF ou RG): ")
+
+    if usuarios_collection.find_one({"email": email}):
+        print(f"Erro: Já existe um usuário cadastrado com o e-mail {email}.")
+        return
+    if usuarios_collection.find_one({"documento": documento}):
+        print(f"Erro: Já existe um usuário cadastrado com o documento {documento}.")
+        return
+
+    usuario = {
+        "nome": nome,
+        "email": email,
+        "data_nascimento": data_nascimento,
+        "documento": documento
+    }
+
+    usuarios_collection.insert_one(usuario)
+    print(f"Usuário '{nome}' cadastrado com sucesso.")
