@@ -72,3 +72,8 @@ def atualizar_livro():
 
     livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$set": novos_dados})
     print(f"Livro ID {livro_id} atualizado com sucesso.")
+
+def excluir_livro():
+    livro_id = input("Digite o ID do livro que deseja excluir: ")
+    livros_collection.delete_one({"_id": ObjectId(livro_id)})
+    print(f"Livro ID {livro_id} excluído com sucesso.")
