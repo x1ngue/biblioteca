@@ -130,3 +130,15 @@ def atualizar_usuario():
             print(f"Usuário com ID {id_usuario} não encontrado.")
     except pymongo.errors.OperationFailure as e:
         print(f"Erro ao atualizar usuário: {e}")
+
+def deletar_usuario():
+    id_usuario = input("Digite o ID do usuário a ser deletado: ")
+    query = {"_id": ObjectId(id_usuario)}
+    try:
+        result = usuarios_collection.delete_one(query)
+        if result.deleted_count == 1:
+            print(f"Usuário com ID {id_usuario} deletado com sucesso!")
+        else:
+            print(f"Usuário com ID {id_usuario} não encontrado.")
+    except pymongo.errors.OperationFailure as e:
+        print(f"Erro ao deletar usuário: {e}")
