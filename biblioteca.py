@@ -99,3 +99,18 @@ def cadastrar_usuario():
 
     usuarios_collection.insert_one(usuario)
     print(f"Usuário '{nome}' cadastrado com sucesso.")
+
+def listar_usuarios():
+    usuarios = usuarios_collection.find()
+    for usuario in usuarios:
+        if 'data_nascimento' in usuario:
+            data_nascimento = usuario['data_nascimento']
+        else:
+            data_nascimento = "Não informada"
+        
+        if 'documento' in usuario:
+            documento = usuario['documento']
+        else:
+            documento = "Não informado"
+        
+        print(f"ID: {usuario['_id']}, Nome: {usuario['nome']}, E-mail: {usuario['email']}, Data de Nascimento: {data_nascimento}, Documento: {documento}")       
