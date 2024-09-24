@@ -1,18 +1,24 @@
 from pymongo import MongoClient
-import getpass
 from bson.objectid import ObjectId
+from datetime import datetime 
+import getpass
 import sys
+import configparser 
+
 
 while True:
-    senha = getpass.getpass("Digite a senha do MongoDB: ")
 
-    uri = f"mongodb+srv://x1ngue:{senha}@cluster0.uwf0d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
+    senha = config['conexao']['senha']
 
     try:
+        uri = f"mongodb+srv://x1ngue:{senha}@cluster0.uwf0d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
         client = MongoClient(uri)
         db = client['biblioteca']
         db_l = client.list_database_names()
-        print("Conexão bem-sucedida ao MongoDB!")
+        print("\nConexão bem-sucedida ao MongoDB!")
         break
     except Exception as e:
         print("Erro ao conectar ao MongoDB:", e)
@@ -85,7 +91,7 @@ def excluir_livro():
 def cadastrar_usuario():
     nome = input("Digite o nome do usuário: ")
     email = input("Digite o email do usuário: ")
-    data_nascimento = input("Digite a data de nascimento (dd/mm/aaaa): ")
+    data_nascimento = input("Digite a data de nascimento (aaaa-mm-dd): ")
     documento = input("Digite o número de documento (CPF ou RG): ")
 
     if usuarios_collection.find_one({"email": email}):
@@ -157,7 +163,7 @@ def emprestar_livro():
         emprestimo = {
             "livro_id": ObjectId(livro_id),
             "usuario_id": ObjectId(usuario_id),
-            "data_emprestimo": "2024-09-21",
+            "data_emprestimo": datetime.now(),
             "devolvido": False
         }
         emprestimos_collection.insert_one(emprestimo)
@@ -184,12 +190,39 @@ def devolver_livro():
         print("Empréstimo já finalizado ou inexistente.")
 
 def listar_emprestimos():
-    emprestimos = emprestimos_collection.find()
-    for emprestimo in emprestimos:
-        print(f"ID Empréstimo: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Usuário ID: {emprestimo['usuario_id']}, Devolvido: {emprestimo['devolvido']}")
+    data_inicial = input("\nDigite a data inicial (aaaa-mm-dd): ")
+    data_final = input("Digite a data final (aaaa-mm-dd): ")
+
+    data_inicial = datetime.strptime(data_inicial, "%Y-%m-%d")
+    data_final = datetime.strptime(data_final, "%Y-%m-%d")
+
+    data_inicial = data_inicial.replace(hour=0, minute=0, second=0)
+    data_final = data_final.replace(hour=23, minute=59, second=59)
+
+    emprestimos = emprestimos_collection.find({
+        "data_emprestimo": {
+            "$gte": data_inicial,
+            "$lte": data_final
+        }
+    })
+
+    emprestimos_lista = list(emprestimos)
+
+    if len(emprestimos_lista) == 0:
+        print("Nenhum empréstimo encontrado.")  
+    else:
+        for emprestimo in emprestimos_lista:
+            print("\n\n------------------------")
+            print(f"ID Empréstimo: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Usuário ID: {emprestimo['usuario_id']}, Devolvido: {emprestimo['devolvido']}")
+            print("Dados do empréstimo:")
+            print(f"  Data do empréstimo: {emprestimo['data_emprestimo'].strftime('%Y-%m-%d %H:%M:%S')}")
+            print(f"  Livro: {emprestimo['livro_id']}")
+            print(f"  Usuário: {emprestimo['usuario_id']}")
+            print(f"  Devolvido: {emprestimo['devolvido']}")
+            print("------------------------\n")
 
 while True:
-    print("\nMenu Biblioteca:")
+    print("\nMenu Biblioteca:\n")
     print("1. Adicionar Livro")
     print("2. Listar Livros")
     print("3. Atualizar Livro")
@@ -203,7 +236,7 @@ while True:
     print("11. Listar Empréstimos")
     print("12. Sair")
 
-    opcao = input("Escolha uma opção: ")
+    opcao = input("\nEscolha uma opção: ")
 
     if opcao == '1':
         adicionar_livro()

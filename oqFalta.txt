@@ -1,3 +1,3 @@
-1 - listar emprestimos por periodo (utilizando datatime).
 2 - arrumar atualização de usúario (adicionar mudar nome, data, etc...).
 3 - tratar erros de codigo para ao inves de dar erro, printar mensagem de erro mas recomecar o código.
+4 - adicionar voltar ao menu principal quando selecionar sem querer alguma opção.
