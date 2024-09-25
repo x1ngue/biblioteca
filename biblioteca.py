@@ -159,27 +159,57 @@ def excluir_livro():
         print(f"Erro inesperado: {e}")
 
 def cadastrar_usuario():
-    nome = input("Digite o nome do usuário: ")
-    email = input("Digite o email do usuário: ")
-    data_nascimento = input("Digite a data de nascimento (aaaa-mm-dd): ")
-    documento = input("Digite o número de documento (CPF ou RG): ")
+    try:
+        nome = input("Digite o nome do usuário: ")
+        if not nome:
+            print("\nErro: O nome do usuário deve ser informado.")
+            return
+        
+        email = input("Digite o email do usuário: ")
+        if not email:
+            print("\nErro: O email do usuário deve ser informado.")
+            return
+        
+        data_nascimento = input("Digite a data de nascimento (aaaa-mm-dd): ")
+        try:
+            datetime.strptime(data_nascimento, "%Y-%m-%d")
+        except ValueError:
+            print("\nErro: A data de nascimento é invalida. Use o formato aaaa-mm-dd.")
+            return
+            
+        documento = input("Digite o número de documento (CPF ou RG): ")
+        if not documento:
+            print("\nErro: O número de documento deve ser informado.")
+            return
+        
+        try:
+            if usuarios_collection.find_one({"documento": documento}):
+                print(f"Erro: Já existe um usuário cadastrado com o documento {documento}.")
+                return
+        except pymongo.errors.PyMongoError as e:
+            print(f"Erro d conexão com o banco de dados: {e}")
+            return
 
-    if usuarios_collection.find_one({"email": email}):
-        print(f"Erro: Já existe um usuário cadastrado com o e-mail {email}.")
-        return
-    if usuarios_collection.find_one({"documento": documento}):
-        print(f"Erro: Já existe um usuário cadastrado com o documento {documento}.")
-        return
+        usuario = {
+            "nome": nome,
+            "email": email,
+            "data_nascimento": data_nascimento,
+            "documento": documento
+        }
 
-    usuario = {
-        "nome": nome,
-        "email": email,
-        "data_nascimento": data_nascimento,
-        "documento": documento
-    }
-
-    usuarios_collection.insert_one(usuario)
-    print(f"Usuário '{nome}' cadastrado com sucesso.")
+        try:
+            usuarios_collection.insert_one(usuario)
+            print(f"Usuário '{nome}' cadastrado com sucesso.")
+        except pymongo.errors.PyMongoError as e:
+            print(f"Erro d conexão com o banco de dados: {e}")
+        except Exception as e:
+            print(f"Erro inesperado: {e}")
+    except KeyboardInterrupt:
+        print("\n\nOperação cancelada pelo usuário.")
+    except EOFError:
+        print("\nErro: Entrada de dados inválida. Tente novamente.")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
 
 def listar_usuarios():
     usuarios = usuarios_collection.find()
