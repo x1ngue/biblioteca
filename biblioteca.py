@@ -305,25 +305,78 @@ def atualizar_usuario():
         print(f"Erro inesperado: {e}")
 
 def emprestar_livro():
-    livro_id = input("Digite o ID do livro a ser emprestado: ")
-    usuario_id = input("Digite o ID do usuário: ")
-    livro = livros_collection.find_one({"_id": ObjectId(livro_id)})
+    try:
+        livro_id = input("Digite o ID do livro a ser emprestado: ")
+        if not livro_id:
+            print("Erro: O ID do livro é obrigatório.")
+            return
 
-    if livro and livro['disponivel'] and livro['quantidade'] > 0:
+        try:
+            ObjectId(livro_id)
+        except InvalidId:
+            print("Erro: O ID do livro é inválido.")
+            return
+
+        usuario_id = input("Digite o ID do usuário: ")
+        if not usuario_id:
+            print("Erro: O ID do usuário é obrigatório.")
+            return
+
+        try:
+            ObjectId(usuario_id)
+        except InvalidId:
+            print("Erro: O ID do usuário é inválido.")
+            return
+
+        try:
+            livro = livros_collection.find_one({"_id": ObjectId(livro_id)})
+        except pymongo.errors.PyMongoError as e:
+            print(f"Erro de conexão com o banco de dados: {e}")
+            return
+
+        if livro is None:
+            print(f"Livro ID {livro_id} não encontrado.")
+            return
+
+        if not livro['disponivel'] or livro['quantidade'] <= 0:
+            print("Livro não disponível para empréstimo.")
+            return
+
         emprestimo = {
             "livro_id": ObjectId(livro_id),
             "usuario_id": ObjectId(usuario_id),
             "data_emprestimo": datetime.now(),
             "devolvido": False
         }
-        emprestimos_collection.insert_one(emprestimo)
-        livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$inc": {"quantidade": -1}})
+
+        try:
+            emprestimos_collection.insert_one(emprestimo)
+        except pymongo.errors.PyMongoError as e:
+            print(f"Erro ao inserir empréstimo: {e}")
+            return
+        
+        try:
+            livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$inc": {"quantidade": -1}})
+        except pymongo.errors.PyMongoError as e:
+            print(f"\nErro ao atualizar livro: {e}")
+            return
+        
         livro_atualizado = livros_collection.find_one({"_id": ObjectId(livro_id)})
+
         if livro_atualizado['quantidade'] == 0:
-            livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$set": {"disponivel": False}})
+            try:
+                livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$set": {"disponivel": False}})
+            except pymongo.errors.PyMongoError as e:
+                print(f"\nErro ao atualizar livro: {e}")
+                return
+        
         print(f"Livro ID {livro_id} emprestado ao usuário ID {usuario_id}.")
-    else:
-        print("Livro não disponível para empréstimo.")
+    except KeyboardInterrupt:
+        print("\n\nOperação cancelada pelo usuário.")
+    except EOFError:
+        print("\nErro: Entrada de dados inválida. Tente novamente.")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
 
 def devolver_livro():
     emprestimo_id = input("Digite o ID do empréstimo: ")
