@@ -212,20 +212,43 @@ def cadastrar_usuario():
         print(f"Erro inesperado: {e}")
 
 def listar_usuarios():
-    usuarios = usuarios_collection.find()
+    try:
+        try:
+            usuarios = usuarios_collection.find()
+        except pymongo.errors.PyMongoError as e:
+            print(f"Erro de conexão com o banco de dados: {e}")
+            return
 
-    for usuario in usuarios:
-        if 'data_nascimento' in usuario:
-            data_nascimento = usuario['data_nascimento']
-        else:
-            data_nascimento = "Não informada"
-        
-        if 'documento' in usuario:
-            documento = usuario['documento']
-        else:
-            documento = "Não informado"
-        
-        print(f"ID: {usuario['_id']}, Nome: {usuario['nome']}, E-mail: {usuario['email']}, Data de Nascimento: {data_nascimento}, Documento: {documento}")
+        if usuarios is None:
+            print("Erro: Não foi possível recuperar a lista de usuários.")
+            return
+
+        for usuario in usuarios:
+            try:
+                if '_id' not in usuario:
+                    print("Erro: O usuário não tem ID.")
+                    continue
+
+                if 'nome' not in usuario:
+                    print(f"Erro: O usuário {usuario['_id']} não tem nome.")
+                    continue
+
+                if 'email' not in usuario:
+                    print(f"Erro: O usuário {usuario['_id']} não tem e-mail.")
+                    continue
+
+                data_nascimento = usuario.get('data_nascimento', "Não informada")
+                documento = usuario.get('documento', "Não informado")
+
+                print(f"ID: {usuario['_id']}, Nome: {usuario['nome']}, E-mail: {usuario['email']}, Data de Nascimento: {data_nascimento}, Documento: {documento}")
+            except Exception as e:
+                print(f"Erro inesperado ao processar o usuário {usuario['_id']}: {e}")
+    except KeyboardInterrupt:
+        print("Operação cancelada pelo usuário.")
+    except EOFError:
+        print("Erro: Entrada de dados inválida.")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
 
 def atualizar_usuario():
     id_usuario = input("Digite o ID do usuário a ser atualizado: ")
