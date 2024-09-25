@@ -1,7 +1,8 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime
-import configparser 
+import configparser
+import pymongo
 
 
 while True:
@@ -118,7 +119,7 @@ def atualizar_livro():
             
         try:
             livro_id_obj = ObjectId(livro_id)
-        except InvalidId:
+        except ValueError:
             print("Erro: O ID do livro é inválido.")
             return
         
@@ -137,7 +138,7 @@ def excluir_livro():
         livro_id = input("Digite o ID do livro que deseja excluir: ")
         try:
             livro_id_obj = ObjectId(livro_id)
-        except InvalidId:
+        except ValueError:
             print("\nErro: O ID do livro é inválido.")
             return
         
@@ -259,7 +260,7 @@ def atualizar_usuario():
 
         try:
             ObjectId(id_usuario)
-        except InvalidId:
+        except ValueError:
             print("Erro: O ID do usuário é inválido.")
             return
 
@@ -304,6 +305,40 @@ def atualizar_usuario():
     except Exception as e:
         print(f"Erro inesperado: {e}")
 
+def deletar_usuario():
+    try:
+        id_usuario = input("Digite o ID do usuário a ser deletado: ")
+        if not id_usuario:
+            print("Erro: O ID do usuário é obrigatório.")
+            return
+
+        try:
+            ObjectId(id_usuario)
+        except Exception as e:
+            print("Erro: O ID do usuário é inválido.")
+            return
+
+        query = {"_id": ObjectId(id_usuario)}
+
+        try:
+            resultado = usuarios_collection.delete_one(query)
+        except pymongo.errors.PyMongoError as e:
+            print(f"Erro de conexão com o banco de dados: {e}")
+            return
+
+        if resultado.deleted_count == 1:
+            print(f"Usuário com ID {id_usuario} deletado com sucesso!")
+        elif resultado.deleted_count == 0:
+            print(f"Usuário com ID {id_usuario} não encontrado.")
+        else:
+            print(f"Erro ao deletar usuário: {resultado}")
+    except KeyboardInterrupt:
+        print("Operação cancelada pelo usuário.")
+    except EOFError:
+        print("Erro: Entrada de dados inválida.")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
+
 def emprestar_livro():
     try:
         livro_id = input("Digite o ID do livro a ser emprestado: ")
@@ -313,7 +348,7 @@ def emprestar_livro():
 
         try:
             ObjectId(livro_id)
-        except InvalidId:
+        except ValueError:
             print("Erro: O ID do livro é inválido.")
             return
 
@@ -324,7 +359,7 @@ def emprestar_livro():
 
         try:
             ObjectId(usuario_id)
-        except InvalidId:
+        except ValueError:
             print("Erro: O ID do usuário é inválido.")
             return
 
