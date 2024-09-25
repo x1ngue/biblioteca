@@ -78,7 +78,7 @@ def listar_livros():
 
     encontrado = False
     for livro in livros:
-        print(f"ID: {livro['_id']}, Título: {livro['titulo']}, Autor: {livro['autor']}, Gênero: {livro['genero']}, "
+        print(f"\nID: {livro['_id']}, Título: {livro['titulo']}, Autor: {livro['autor']}, Gênero: {livro['genero']}, "
             f"Ano: {livro['ano']}, ISBN: {livro['isbn']}, Quantidade: {livro['quantidade']}, Disponível: {livro['disponivel']}")
         
         encontrado = True
@@ -87,28 +87,50 @@ def listar_livros():
         print("\n\nNenhum livro encontrado.\n")
         
 def atualizar_livro():
-    livro_id = input("Digite o ID do livro que deseja atualizar: ")
-    novos_dados = {}
-    titulo = input("Novo título (deixe em branco para manter o atual): ")
-    autor = input("Novo autor (deixe em branco para manter o atual): ")
-    genero = input("Novo gênero (deixe em branco para manter o atual): ")
-    ano = input("Novo ano de publicação (deixe em branco para manter o atual): ")
-    quantidade = input("Nova quantidade de exemplares (deixe em branco para manter o atual): ")
+    try:
+        livro_id = input("Digite o ID do livro que deseja atualizar: ")
+        novos_dados = {}
+        titulo = input("Novo título (deixe em branco para manter o atual): ")
+        autor = input("Novo autor (deixe em branco para manter o atual): ")
+        genero = input("Novo gênero (deixe em branco para manter o atual): ")
+        ano = input("Novo ano de publicação (deixe em branco para manter o atual): ")
+        quantidade = input("Nova quantidade de exemplares (deixe em branco para manter o atual): ")
 
-    if titulo:
-        novos_dados['titulo'] = titulo
-    if autor:
-        novos_dados['autor'] = autor
-    if genero:
-        novos_dados['genero'] = genero
-    if ano:
-        novos_dados['ano'] = int(ano)
-    if quantidade:
-        novos_dados['quantidade'] = int(quantidade)
-        novos_dados['disponivel'] = int(quantidade) > 0 
-
-    livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$set": novos_dados})
-    print(f"Livro ID {livro_id} atualizado com sucesso.")
+        if titulo:
+            novos_dados['titulo'] = titulo
+        if autor:
+            novos_dados['autor'] = autor
+        if genero:
+            novos_dados['genero'] = genero
+        if ano:
+            try:
+                novos_dados['ano'] = int(ano)
+            except ValueError:
+                print("\nErro: O ano de publicação deve ser um número inteiro.")
+                return
+        if quantidade:
+            try:
+                novos_dados['quantidade'] = int(quantidade)
+                novos_dados['disponivel'] = int(quantidade) > 0
+            except ValueError:
+                print("\nErro: A quantidade de exemplares deve ser um número inteiro.")
+                return
+            
+        try:
+            livro_id_obj = ObjectId(livro_id)
+        except InvalidId:
+            print("Erro: O ID do livro é inválido.")
+            return
+        
+        resultado = livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$set": novos_dados})
+        if resultado.matched_count == 0:
+            print("Erro: O livro não foi encontrado.")
+        else:
+            print(f"\nLivro ID {livro_id} atualizado com sucesso.")
+    except pymongo.errors.PyMongoError as e:
+        print(f"Erro d conexão com o banco de dados: {e}")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
 
 def excluir_livro():
     livro_id = input("Digite o ID do livro que deseja excluir: ")
