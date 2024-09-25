@@ -133,9 +133,30 @@ def atualizar_livro():
         print(f"Erro inesperado: {e}")
 
 def excluir_livro():
-    livro_id = input("Digite o ID do livro que deseja excluir: ")
-    livros_collection.delete_one({"_id": ObjectId(livro_id)})
-    print(f"Livro ID {livro_id} excluído com sucesso.")
+    try:
+        livro_id = input("Digite o ID do livro que deseja excluir: ")
+        try:
+            livro_id_obj = ObjectId(livro_id)
+        except InvalidId:
+            print("\nErro: O ID do livro é inválido.")
+            return
+        
+        try:
+            resultado = livros_collection.delete_one({"_id": ObjectId(livro_id)})
+            if resultado.deleted_count == 0:
+                print("\nErro: O livro não foi encontrado.")
+            else:
+                print(f"Livro ID {livro_id} excluído com sucesso.")
+        except pymongo.errors.PyMongoError as e:
+            print(f"Erro d conexão com o banco de dados: {e}")
+        except Exception as e:
+            print(f"Erro inesperado: {e}")
+    except KeyboardInterrupt:
+        print("\n\nOperação cancelada pelo usuário.")
+    except EOFError:
+        print("\nErro: Entrada de dados inválida. Tente novamente.")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
 
 def cadastrar_usuario():
     nome = input("Digite o nome do usuário: ")
