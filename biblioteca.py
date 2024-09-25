@@ -128,10 +128,13 @@ def listar_usuarios():
 
 def atualizar_usuario():
     id_usuario = input("Digite o ID do usuário a ser atualizado: ")
-    email = input("Digite o novo email do usuário: ")
+    nome = input("Digite o novo nome do usuário (deixe em branco para manter o atual): ")
+    email = input("Digite o novo email do usuário (deixe em branco para manter o atual): ")
+    data_nascimento = input("Digite a nova data de nascimento (deixe em branco para manter o atual): ")
+    documento = input("Digite o novo número de documento (deixe em branco para manter o atual): ")
 
     query = {"_id": ObjectId(id_usuario)}
-    update = {"$set": {"email": email}}
+    update = {"$set": {"nome": nome, "email": email, "data_nascimento": data_nascimento, "documento": documento}}
 
     try:
         result = usuarios_collection.update_one(query, update)
