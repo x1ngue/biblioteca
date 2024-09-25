@@ -16,7 +16,7 @@ while True:
         client = MongoClient(uri)
         db = client['biblioteca']
         db_l = client.list_database_names()
-        print("\nConexão bem-sucedida ao MongoDB!")
+        print("\nConexão bem-sucedida ao MongoDB!\n")
         break
     except Exception as e:
         print("Erro ao conectar ao MongoDB:", e)
@@ -249,7 +249,7 @@ def listar_emprestimos():
             print("------------------------\n")
 
 while True:
-    print("\nMenu Biblioteca:\n")
+    print("\nMenu Biblioteca: (utilize os números para escolher uma opção).\n")
     print("1. Adicionar Livro")
     print("2. Listar Livros")
     print("3. Atualizar Livro")
