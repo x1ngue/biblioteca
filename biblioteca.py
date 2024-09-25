@@ -251,36 +251,58 @@ def listar_usuarios():
         print(f"Erro inesperado: {e}")
 
 def atualizar_usuario():
-    id_usuario = input("Digite o ID do usuário a ser atualizado: ")
-    nome = input("Digite o novo nome do usuário (deixe em branco para manter o atual): ")
-    email = input("Digite o novo email do usuário (deixe em branco para manter o atual): ")
-    data_nascimento = input("Digite a nova data de nascimento (deixe em branco para manter o atual): ")
-    documento = input("Digite o novo número de documento (deixe em branco para manter o atual): ")
-
-    query = {"_id": ObjectId(id_usuario)}
-    update = {"$set": {"nome": nome, "email": email, "data_nascimento": data_nascimento, "documento": documento}}
-
     try:
-        result = usuarios_collection.update_one(query, update)
-        if result.modified_count == 1:
-            print(f"Usuário com ID {id_usuario} atualizado com sucesso!")
-        else:
-            print(f"Usuário com ID {id_usuario} não encontrado.")
-    except pymongo.errors.OperationFailure as e:
-        print(f"Erro ao atualizar usuário: {e}")
+        id_usuario = input("Digite o ID do usuário a ser atualizado: ")
+        if not id_usuario:
+            print("Erro: O ID do usuário é obrigatório.")
+            return
 
-def deletar_usuario():
-    id_usuario = input("Digite o ID do usuário a ser deletado: ")
-    query = {"_id": ObjectId(id_usuario)}
+        try:
+            ObjectId(id_usuario)
+        except InvalidId:
+            print("Erro: O ID do usuário é inválido.")
+            return
 
-    try:
-        result = usuarios_collection.delete_one(query)
-        if result.deleted_count == 1:
-            print(f"Usuário com ID {id_usuario} deletado com sucesso!")
-        else:
-            print(f"Usuário com ID {id_usuario} não encontrado.")
-    except pymongo.errors.OperationFailure as e:
-        print(f"Erro ao deletar usuário: {e}")
+        nome = input("Digite o novo nome do usuário (deixe em branco para manter o atual): ")
+        email = input("Digite o novo email do usuário (deixe em branco para manter o atual): ")
+        data_nascimento = input("Digite a nova data de nascimento (deixe em branco para manter o atual): ")
+        documento = input("Digite o novo número de documento (deixe em branco para manter o atual): ")
+
+        query = {"_id": ObjectId(id_usuario)}
+        update = {"$set": {}}
+
+        if nome:
+            update["$set"]["nome"] = nome
+        if email:
+            update["$set"]["email"] = email
+        if data_nascimento:
+            try:
+                datetime.strptime(data_nascimento, "%Y-%m-%d")
+                update["$set"]["data_nascimento"] = data_nascimento
+            except ValueError:
+                print("Erro: A data de nascimento é inválida. Use o formato aaaa-mm-dd.")
+                return
+        if documento:
+            update["$set"]["documento"] = documento
+
+        try:
+            result = usuarios_collection.update_one(query, update)
+            if result.modified_count == 1:
+                print(f"Usuário com ID {id_usuario} atualizado com sucesso!")
+            elif result.matched_count == 0:
+                print(f"Usuário com ID {id_usuario} não encontrado.")
+            else:
+                print(f"Usuário com ID {id_usuario} não foi atualizado.")
+        except pymongo.errors.OperationFailure as e:
+            print(f"Erro ao atualizar usuário: {e}")
+        except pymongo.errors.PyMongoError as e:
+            print(f"Erro de conexão com o banco de dados: {e}")
+    except KeyboardInterrupt:
+        print("Operação cancelada pelo usuário.")
+    except EOFError:
+        print("Erro: Entrada de dados inválida.")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
 
 def emprestar_livro():
     livro_id = input("Digite o ID do livro a ser emprestado: ")
