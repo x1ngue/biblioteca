@@ -1,7 +1,6 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from datetime import datetime 
-import getpass
+from datetime import datetime
 import configparser 
 
 
@@ -77,9 +76,15 @@ def adicionar_livro():
 def listar_livros():
     livros = livros_collection.find()
 
+    encontrado = False
     for livro in livros:
         print(f"ID: {livro['_id']}, Título: {livro['titulo']}, Autor: {livro['autor']}, Gênero: {livro['genero']}, "
-              f"Ano: {livro['ano']}, ISBN: {livro['isbn']}, Quantidade: {livro['quantidade']}, Disponível: {livro['disponivel']}")
+            f"Ano: {livro['ano']}, ISBN: {livro['isbn']}, Quantidade: {livro['quantidade']}, Disponível: {livro['disponivel']}")
+        
+        encontrado = True
+
+    if not encontrado:
+        print("\n\nNenhum livro encontrado.\n")
         
 def atualizar_livro():
     livro_id = input("Digite o ID do livro que deseja atualizar: ")
