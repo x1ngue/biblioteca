@@ -2,7 +2,6 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime 
 import getpass
-import sys
 import configparser 
 
 
@@ -28,29 +27,52 @@ usuarios_collection = db['usuarios']
 emprestimos_collection = db['emprestimos']
 
 def adicionar_livro():
-    titulo = input("Digite o título do livro: ")
-    autor = input("Digite o autor do livro: ")
-    genero = input("Digite o gênero do livro: ")
-    ano = int(input("Digite o ano de publicação: "))
-    isbn = input("Digite o ISBN (código único): ")
-    quantidade = int(input("Digite a quantidade de exemplares disponíveis: "))
+    try:
+        titulo = input("Digite o título do livro: ")
+        if not titulo.strip():
+            raise ValueError("Título não pode ser vazio")
 
-    if livros_collection.find_one({"isbn": isbn}):
-        print(f"Erro: Já existe um livro cadastrado com o ISBN {isbn}.")
-        return
+        autor = input("Digite o autor do livro: ")
+        if not autor.strip():
+            raise ValueError("Autor não pode ser vazio")
 
-    livro = {
-        "titulo": titulo,
-        "autor": autor,
-        "genero": genero,
-        "ano": ano,
-        "isbn": isbn,
-        "quantidade": quantidade,
-        "disponivel": quantidade > 0 
-    }
+        genero = input("Digite o gênero do livro: ")
+        if not genero.strip():
+            raise ValueError("Gênero não pode ser vazio")
 
-    livros_collection.insert_one(livro)
-    print(f"Livro '{titulo}' adicionado com sucesso.")
+        ano = int(input("Digite o ano de publicação: "))
+        if ano < 1900 or ano > datetime.now().year:
+            raise ValueError("Ano de publicação deve ser entre 1900 e o ano atual")
+
+        isbn = input("Digite o ISBN (código único): ")
+        if not isbn.strip():
+            raise ValueError("ISBN não pode ser vazio")
+
+        quantidade = int(input("Digite a quantidade de exemplares disponíveis: "))
+        if quantidade < 0:
+            raise ValueError("Quantidade de exemplares não pode ser negativa")
+
+        if livros_collection.find_one({"isbn": isbn}):
+            raise ValueError(f"Erro: Já existe um livro cadastrado com o ISBN {isbn}.")
+
+        livro = {
+            "titulo": titulo,
+            "autor": autor,
+            "genero": genero,
+            "ano": ano,
+            "isbn": isbn,
+            "quantidade": quantidade,
+            "disponivel": quantidade > 0
+        }
+
+        livros_collection.insert_one(livro)
+        print(f"Livro '{titulo}' adicionado com sucesso.")
+
+    except ValueError as e:
+        print(f"\nErro: {e}.")
+
+    except Exception as e:
+        print(f"\nErro inesperado: {e}")
 
 def listar_livros():
     livros = livros_collection.find()
@@ -149,7 +171,7 @@ def atualizar_usuario():
 def deletar_usuario():
     id_usuario = input("Digite o ID do usuário a ser deletado: ")
     query = {"_id": ObjectId(id_usuario)}
-    
+
     try:
         result = usuarios_collection.delete_one(query)
         if result.deleted_count == 1:
