@@ -7,7 +7,6 @@ import configparser
 
 
 while True:
-
     config = configparser.ConfigParser()
     config.read('config.ini')
 
@@ -55,6 +54,7 @@ def adicionar_livro():
 
 def listar_livros():
     livros = livros_collection.find()
+
     for livro in livros:
         print(f"ID: {livro['_id']}, Título: {livro['titulo']}, Autor: {livro['autor']}, Gênero: {livro['genero']}, "
               f"Ano: {livro['ano']}, ISBN: {livro['isbn']}, Quantidade: {livro['quantidade']}, Disponível: {livro['disponivel']}")
@@ -113,6 +113,7 @@ def cadastrar_usuario():
 
 def listar_usuarios():
     usuarios = usuarios_collection.find()
+
     for usuario in usuarios:
         if 'data_nascimento' in usuario:
             data_nascimento = usuario['data_nascimento']
@@ -148,6 +149,7 @@ def atualizar_usuario():
 def deletar_usuario():
     id_usuario = input("Digite o ID do usuário a ser deletado: ")
     query = {"_id": ObjectId(id_usuario)}
+    
     try:
         result = usuarios_collection.delete_one(query)
         if result.deleted_count == 1:

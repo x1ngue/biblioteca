@@ -1,3 +1,2 @@
-1 - arrumar atualização de usúario (adicionar mudar nome, data, etc...).
-2 - tratar erros de codigo para ao inves de dar erro, printar mensagem de erro mas recomecar o código.
-3 - adicionar voltar ao menu principal quando selecionar sem querer alguma opção.
+1 - tratar erros de codigo para ao inves de dar erro, printar mensagem de erro mas recomecar o código.
+2 - adicionar voltar ao menu principal quando selecionar sem querer alguma opção.
