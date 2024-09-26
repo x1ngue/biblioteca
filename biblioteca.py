@@ -474,36 +474,67 @@ def devolver_livro():
         print(f"\nErro inesperado: {e}")
 
 def listar_emprestimos():
-    data_inicial = input("\nDigite a data inicial (aaaa-mm-dd): ")
-    data_final = input("Digite a data final (aaaa-mm-dd): ")
+    try:
+        data_inicial = input("\nDigite a data inicial (aaaa-mm-dd): ")
+        if not data_inicial:
+            print("\nErro: A data inicial é obrigatória.")
+            return
+        
+        try:
+            data_inicial = datetime.strptime(data_inicial, "%Y-%m-%d")
+        except ValueError:
+            print(f"\nErro: A data inicial é inválida. Use o formato aaaa-mm-dd.")
+            return
+        
+        data_final = input("Digite a data final (aaaa-mm-dd): ")
+        if not data_final:
+            print("\nErro: A data final é obrigatória.")
+            return
+        
+        try:
+            data_final = datetime.strptime(data_final, "%Y-%m-%d")
+        except ValueError:
+            print(f"\nErro: A data final é inválida. Use o formato aaaa-mm-dd.")
+            return
+        
+        if data_inicial > data_final:
+            print("\nErro: A data inicial deve ser anterior a data final.")
+            return
 
-    data_inicial = datetime.strptime(data_inicial, "%Y-%m-%d")
-    data_final = datetime.strptime(data_final, "%Y-%m-%d")
+        data_inicial = data_inicial.replace(hour=0, minute=0, second=0)
+        data_final = data_final.replace(hour=23, minute=59, second=59)
 
-    data_inicial = data_inicial.replace(hour=0, minute=0, second=0)
-    data_final = data_final.replace(hour=23, minute=59, second=59)
+        try:
+            emprestimos = emprestimos_collection.find({
+                "data_emprestimo": {
+                    "$gte": data_inicial,
+                    "$lte": data_final
+                }
+            })
+        except pymongo.errors.PyMongoError as e:
+            print(f"\nErro de conexão com o banco de dados: {e}")
+            return
 
-    emprestimos = emprestimos_collection.find({
-        "data_emprestimo": {
-            "$gte": data_inicial,
-            "$lte": data_final
-        }
-    })
+        emprestimos_lista = list(emprestimos)
 
-    emprestimos_lista = list(emprestimos)
-
-    if len(emprestimos_lista) == 0:
-        print("Nenhum empréstimo encontrado.")  
-    else:
-        for emprestimo in emprestimos_lista:
-            print("\n\n------------------------")
-            print(f"ID Empréstimo: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Usuário ID: {emprestimo['usuario_id']}, Devolvido: {emprestimo['devolvido']}")
-            print("Dados do empréstimo:")
-            print(f"  Data do empréstimo: {emprestimo['data_emprestimo'].strftime('%Y-%m-%d %H:%M:%S')}")
-            print(f"  Livro: {emprestimo['livro_id']}")
-            print(f"  Usuário: {emprestimo['usuario_id']}")
-            print(f"  Devolvido: {emprestimo['devolvido']}")
-            print("------------------------\n")
+        if len(emprestimos_lista) == 0:
+            print("Nenhum empréstimo encontrado.")  
+        else:
+            for emprestimo in emprestimos_lista:
+                print("\n\n------------------------")
+                print(f"ID Empréstimo: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Usuário ID: {emprestimo['usuario_id']}, Devolvido: {emprestimo['devolvido']}")
+                print("Dados do empréstimo:")
+                print(f"  Data do empréstimo: {emprestimo['data_emprestimo'].strftime('%Y-%m-%d %H:%M:%S')}")
+                print(f"  Livro: {emprestimo['livro_id']}")
+                print(f"  Usuário: {emprestimo['usuario_id']}")
+                print(f"  Devolvido: {emprestimo['devolvido']}")
+                print("------------------------\n")
+    except KeyboardInterrupt:
+        print("\n\nOperação cancelada pelo usuário.")
+    except EOFError:
+        print("\nErro: Entrada de dados inválida. Tente novamente.")
+    except Exception as e:
+        print(f"\nErro inesperado: {e}")
 
 while True:
     print("\nMenu Biblioteca: (utilize os números para escolher uma opção).\n")
