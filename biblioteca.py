@@ -539,48 +539,52 @@ def listar_emprestimos():
         print("\nErro: Entrada de dados inválida. Tente novamente.")
     except Exception as e:
         print(f"\nErro inesperado: {e}")
+try:
 
-while True:
-    print("\nMenu Biblioteca: (utilize os números para escolher uma opção).\n")
-    print("1. Adicionar Livro")
-    print("2. Listar Livros")
-    print("3. Atualizar Livro")
-    print("4. Excluir Livro")
-    print("5. Cadastrar Usuário")
-    print("6. Listar Usuários")
-    print("7. Atualizar Usuário")
-    print("8. Deletar Usuário")
-    print("9. Emprestar Livro")
-    print("10. Devolver Livro")
-    print("11. Listar Empréstimos")
-    print("12. Sair")
+    while True:
+        print("\nMenu Biblioteca: (utilize os números para escolher uma opção).\n")
+        print("1. Adicionar Livro")
+        print("2. Listar Livros")
+        print("3. Atualizar Livro")
+        print("4. Excluir Livro")
+        print("5. Cadastrar Usuário")
+        print("6. Listar Usuários")
+        print("7. Atualizar Usuário")
+        print("8. Deletar Usuário")
+        print("9. Emprestar Livro")
+        print("10. Devolver Livro")
+        print("11. Listar Empréstimos")
+        print("12. Sair")
 
-    opcao = input("\nEscolha uma opção: ")
+        opcao = input("\nEscolha uma opção: ")
 
-    if opcao == '1':
-        adicionar_livro()
-    elif opcao == '2':
-        listar_livros()
-    elif opcao == '3':
-        atualizar_livro()
-    elif opcao == '4':
-        excluir_livro()
-    elif opcao == '5':
-        cadastrar_usuario()
-    elif opcao == '6':
-        listar_usuarios()
-    elif opcao == '7':
-        atualizar_usuario()
-    elif opcao == '8':
-        deletar_usuario()
-    elif opcao == '9':
-        emprestar_livro()
-    elif opcao == '10':
-        devolver_livro()
-    elif opcao == '11':
-        listar_emprestimos()
-    elif opcao == '12':
-        print("Encerrando o sistema.")
-        break
-    else:
-        print("Opção inválida. Tente novamente.")
+        if opcao == '1':
+            adicionar_livro()
+        elif opcao == '2':
+            listar_livros()
+        elif opcao == '3':
+            atualizar_livro()
+        elif opcao == '4':
+            excluir_livro()
+        elif opcao == '5':
+            cadastrar_usuario()
+        elif opcao == '6':
+            listar_usuarios()
+        elif opcao == '7':
+            atualizar_usuario()
+        elif opcao == '8':
+            deletar_usuario()
+        elif opcao == '9':
+            emprestar_livro()
+        elif opcao == '10':
+            devolver_livro()
+        elif opcao == '11':
+            listar_emprestimos()
+        elif opcao == '12':
+            print("Encerrando o sistema.")
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+except KeyboardInterrupt:
+    print("\n\nOperação cancelada pelo usuário.")
