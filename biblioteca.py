@@ -450,6 +450,10 @@ def devolver_livro():
             print(f"\nEmpréstimo ID {emprestimo_id} já foi finalizado.")
             return
         
+        if not emprestimo['devolvido']:
+            if datetime.now() > emprestimo['data_devolucao']:
+                print(f"\nErro: O livro está atrasado. Por favor, devolva-o imediatamente.")
+        
         try:
             livros_collection.update_one({"_id": emprestimo['livro_id']}, {"$inc": {"quantidade": 1}})
         except pymongo.errors.PyMongoError as e:
@@ -545,6 +549,42 @@ def listar_emprestimos():
         print("\nErro: Entrada de dados inválida. Tente novamente.")
     except Exception as e:
         print(f"\nErro inesperado: {e}")
+
+def consultar_emprestimos_usuario():
+    try:
+        usuario_id = input("Digite o ID do usuário: ")
+        if not usuario_id:
+            print("\nErro: O ID do usuário é obrigatório.")
+            return
+        
+        try:
+            ObjectId(usuario_id)
+        except ValueError:
+            print("\nErro: O ID do usuário é inválido.")
+            return
+        
+        try:
+            emprestimos = emprestimos_collection.find({"usuario_id": ObjectId(usuario_id), "devolvido": False})
+        except pymongo.errors.PyMongoError as e:
+            print(f"\nErro de conexão com o banco de dados: {e}")
+            return
+        
+        emprestimos = list(emprestimos)
+
+        if len(emprestimos) == 0:
+            print("\nNenhum empréstimo encontrado para o usuário especificado.")
+        else:
+            for emprestimo in emprestimos:
+                print("\n\n------------------------")
+                print(f"ID Empréstimo: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Data de Empréstimo: {emprestimo['data_emprestimo']}, Data de Devolução: {emprestimo['data_devolucao']}")
+                print("------------------------\n")
+    except KeyboardInterrupt:
+        print("\n\nOperação cancelada pelo usuário.")
+    except EOFError:
+        print("\nErro: Entrada de dados inválida. Tente novamente.")
+    except Exception as e:
+        print(f"\nErro inesperado: {e}")
+
 try:
 
     while True:
@@ -560,7 +600,8 @@ try:
         print("9. Emprestar Livro")
         print("10. Devolver Livro")
         print("11. Listar Empréstimos")
-        print("12. Sair")
+        print("12. Listar Empréstimos por Usuário")
+        print("13. Sair")
 
         opcao = input("\nEscolha uma opção: ")
 
@@ -587,6 +628,8 @@ try:
         elif opcao == '11':
             listar_emprestimos()
         elif opcao == '12':
+            consultar_emprestimos_usuario()
+        elif opcao == '13':
             print("Encerrando o sistema.")
             break
         else:
