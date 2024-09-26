@@ -585,6 +585,40 @@ def consultar_emprestimos_usuario():
     except Exception as e:
         print(f"\nErro inesperado: {e}")
 
+def consultar_usuarios_emprestimos_vencidos():
+    try:
+        data_atual = datetime.now()
+        emprestimos_vencidos = emprestimos_collection.find({
+            "data_devolucao": {"$lt": data_atual},
+            "devolvido": False
+        })
+
+        usuarios_emprestimos_vencidos = []
+        for emprestimo in emprestimos_vencidos:
+            usuario_id = emprestimo["usuario_id"]
+            if usuario_id not in usuarios_emprestimos_vencidos:
+                usuarios_emprestimos_vencidos.append(usuario_id)
+
+        if len(usuarios_emprestimos_vencidos) == 0:
+            print("\nNenhum usuário com empréstimo vencido encontrado.")
+        else:
+            for usuario_id in usuarios_emprestimos_vencidos:
+                print(f"\nUsuário ID: {usuario_id} está com emprestimo vencido.")
+                emprestimos_vencidos_usuario = emprestimos_collection.find({
+                    "usuario_id": usuario_id,
+                    "data_devolução": {"$lt": data_atual},
+                    "devolvido": False
+                })
+                for emprestimo in emprestimos_vencidos_usuario:
+                    print(f"  - Empréstimo ID: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Data de Empréstimo: {emprestimo['data_emprestimo']}, Data de Devolução: {emprestimo['data_devolucao']}")
+    except KeyboardInterrupt:
+        print("\n\nOperação cancelada pelo usuário.")
+    except EOFError:
+        print("\nErro: Entrada de dados inválida. Tente novamente.")
+    except Exception as e:
+        print(f"\nErro inesperado: {e}")
+
+
 try:
 
     while True:
@@ -601,7 +635,8 @@ try:
         print("10. Devolver Livro")
         print("11. Listar Empréstimos")
         print("12. Listar Empréstimos por Usuário")
-        print("13. Sair")
+        print("13. Listar Usuários com Empréstimos Vencidos")
+        print("14. Sair")
 
         opcao = input("\nEscolha uma opção: ")
 
@@ -630,6 +665,8 @@ try:
         elif opcao == '12':
             consultar_emprestimos_usuario()
         elif opcao == '13':
+            consultar_usuarios_emprestimos_vencidos()
+        elif opcao == '14':
             print("Encerrando o sistema.")
             break
         else:
