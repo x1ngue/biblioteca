@@ -6,20 +6,24 @@ import pymongo
 
 
 while True:
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-
-    senha = config['conexao']['senha']
-
     try:
-        uri = f"mongodb+srv://x1ngue:{senha}@cluster0.uwf0d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-        client = MongoClient(uri)
-        db = client['biblioteca']
-        db_l = client.list_database_names()
-        print("\nConexão bem-sucedida ao MongoDB!\n")
-        break
-    except Exception as e:
-        print("Erro ao conectar ao MongoDB:", e)
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+
+        senha = config['conexao']['senha']
+
+        try:
+            uri = f"mongodb+srv://x1ngue:{senha}@cluster0.uwf0d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+            client = MongoClient(uri)
+            db = client['biblioteca']
+            db_l = client.list_database_names()
+            print("\nConexão bem-sucedida ao MongoDB!\n")
+            break
+        except Exception as e:
+            print("Erro ao conectar ao MongoDB:", e)
+    except KeyboardInterrupt:
+        print("\nOperação cancelada pelo usuário.")
+        exit()
         
 
 livros_collection = db['livros']
