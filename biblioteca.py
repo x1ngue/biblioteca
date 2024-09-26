@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime
+from datetime import timedelta
 import configparser
 import pymongo
 
@@ -381,10 +382,15 @@ def emprestar_livro():
             print("Livro não disponível para empréstimo.")
             return
 
+        # Add validation for loan period
+        data_emprestimo = datetime.now()
+        data_devolucao = data_emprestimo + timedelta(days=30)
+
         emprestimo = {
             "livro_id": ObjectId(livro_id),
             "usuario_id": ObjectId(usuario_id),
-            "data_emprestimo": datetime.now(),
+            "data_emprestimo": data_emprestimo,
+            "data_devolucao": data_devolucao,
             "devolvido": False
         }
 
@@ -397,7 +403,7 @@ def emprestar_livro():
         try:
             livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$inc": {"quantidade": -1}})
         except pymongo.errors.PyMongoError as e:
-            print(f"\nErro ao atualizar livro: {e}")
+            print(f"Erro ao atualizar livro: {e}")
             return
         
         livro_atualizado = livros_collection.find_one({"_id": ObjectId(livro_id)})
@@ -406,14 +412,14 @@ def emprestar_livro():
             try:
                 livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$set": {"disponivel": False}})
             except pymongo.errors.PyMongoError as e:
-                print(f"\nErro ao atualizar livro: {e}")
+                print(f"Erro ao atualizar livro: {e}")
                 return
         
-        print(f"Livro ID {livro_id} emprestado ao usuário ID {usuario_id}.")
+        print(f"Livro ID {livro_id} emprestado ao usuário ID {usuario_id}. Data de emprestimo: {data_emprestimo.strftime('%Y-%m-%d %H:%M:%S')}, Data de devolução: {data_devolucao.strftime('%Y-%m-%d %H:%M:%S')}")
     except KeyboardInterrupt:
-        print("\n\nOperação cancelada pelo usuário.")
+        print("Operação cancelada pelo usuário.")
     except EOFError:
-        print("\nErro: Entrada de dados inválida. Tente novamente.")
+        print("Erro: Entrada de dados inválida. Tente novamente.")
     except Exception as e:
         print(f"Erro inesperado: {e}")
 

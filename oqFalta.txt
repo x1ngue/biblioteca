@@ -1,5 +1,4 @@
 2 - adicionar voltar ao menu principal quando selecionar sem querer alguma opção.
-4 - adicionar validade para emprestimo.
 5 - registrar data de devolução do emprestimo.
 6 - consultar os emprestimos em aberto de um usuário especifico.
 7 - consultar usuarios com emprestimo vencidos.
