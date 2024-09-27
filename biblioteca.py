@@ -71,7 +71,7 @@ def adicionar_livro():
         }
 
         livros_collection.insert_one(livro)
-        print(f"Livro '{titulo}' adicionado com sucesso.")
+        print(f"\nLivro '{titulo}' adicionado com sucesso.")
 
     except ValueError as e:
         print(f"\nErro: {e}.")
@@ -85,7 +85,7 @@ def listar_livros():
     encontrado = False
     for livro in livros:
         print(f"\nID: {livro['_id']}, Título: {livro['titulo']}, Autor: {livro['autor']}, Gênero: {livro['genero']}, "
-            f"Ano: {livro['ano']}, ISBN: {livro['isbn']}, Quantidade: {livro['quantidade']}, Disponível: {livro['disponivel']}")
+            f"Ano: {livro['ano']}, ISBN: {livro['isbn']}, Quantidade: {livro['quantidade']}, Disponível: {livro['disponivel']}.")
         
         encontrado = True
 
@@ -152,17 +152,17 @@ def excluir_livro():
             if resultado.deleted_count == 0:
                 print("\nErro: O livro não foi encontrado.")
             else:
-                print(f"Livro ID {livro_id} excluído com sucesso.")
+                print(f"\nLivro ID {livro_id} excluído com sucesso.")
         except pymongo.errors.PyMongoError as e:
-            print(f"Erro d conexão com o banco de dados: {e}")
+            print(f"\nErro d conexão com o banco de dados: {e}")
         except Exception as e:
-            print(f"Erro inesperado: {e}")
+            print(f"\nErro inesperado: {e}")
     except KeyboardInterrupt:
         print("\n\nOperação cancelada pelo usuário.")
     except EOFError:
         print("\nErro: Entrada de dados inválida. Tente novamente.")
     except Exception as e:
-        print(f"Erro inesperado: {e}")
+        print(f"\nErro inesperado: {e}")
 
 def cadastrar_usuario():
     try:
@@ -190,10 +190,10 @@ def cadastrar_usuario():
         
         try:
             if usuarios_collection.find_one({"documento": documento}):
-                print(f"Erro: Já existe um usuário cadastrado com o documento {documento}.")
+                print(f"\nErro: Já existe um usuário cadastrado com o documento {documento}.")
                 return
         except pymongo.errors.PyMongoError as e:
-            print(f"Erro d conexão com o banco de dados: {e}")
+            print(f"\nErro d conexão com o banco de dados: {e}")
             return
 
         usuario = {
@@ -205,11 +205,11 @@ def cadastrar_usuario():
 
         try:
             usuarios_collection.insert_one(usuario)
-            print(f"Usuário '{nome}' cadastrado com sucesso.")
+            print(f"\nUsuário '{nome}' cadastrado com sucesso.")
         except pymongo.errors.PyMongoError as e:
-            print(f"Erro d conexão com o banco de dados: {e}")
+            print(f"\nErro d conexão com o banco de dados: {e}")
         except Exception as e:
-            print(f"Erro inesperado: {e}")
+            print(f"\nErro inesperado: {e}")
     except KeyboardInterrupt:
         print("\n\nOperação cancelada pelo usuário.")
     except EOFError:
@@ -246,7 +246,7 @@ def listar_usuarios():
                 data_nascimento = usuario.get('data_nascimento', "Não informada")
                 documento = usuario.get('documento', "Não informado")
 
-                print(f"ID: {usuario['_id']}, Nome: {usuario['nome']}, E-mail: {usuario['email']}, Data de Nascimento: {data_nascimento}, Documento: {documento}")
+                print(f"\nID: {usuario['_id']}, Nome: {usuario['nome']}, E-mail: {usuario['email']}, Data de Nascimento: {data_nascimento}, Documento: {documento}.")
             except Exception as e:
                 print(f"Erro inesperado ao processar o usuário {usuario['_id']}: {e}")
     except KeyboardInterrupt:
@@ -260,13 +260,13 @@ def atualizar_usuario():
     try:
         id_usuario = input("Digite o ID do usuário a ser atualizado: ")
         if not id_usuario:
-            print("Erro: O ID do usuário é obrigatório.")
+            print("\nErro: O ID do usuário é obrigatório.")
             return
 
         try:
             ObjectId(id_usuario)
         except ValueError:
-            print("Erro: O ID do usuário é inválido.")
+            print("\nErro: O ID do usuário é inválido.")
             return
 
         nome = input("Digite o novo nome do usuário (deixe em branco para manter o atual): ")
@@ -286,7 +286,7 @@ def atualizar_usuario():
                 datetime.strptime(data_nascimento, "%Y-%m-%d")
                 update["$set"]["data_nascimento"] = data_nascimento
             except ValueError:
-                print("Erro: A data de nascimento é inválida. Use o formato aaaa-mm-dd.")
+                print("\nErro: A data de nascimento é inválida. Use o formato aaaa-mm-dd.")
                 return
         if documento:
             update["$set"]["documento"] = documento
@@ -294,33 +294,33 @@ def atualizar_usuario():
         try:
             result = usuarios_collection.update_one(query, update)
             if result.modified_count == 1:
-                print(f"Usuário com ID {id_usuario} atualizado com sucesso!")
+                print(f"\nUsuário com ID {id_usuario} atualizado com sucesso!")
             elif result.matched_count == 0:
-                print(f"Usuário com ID {id_usuario} não encontrado.")
+                print(f"\nUsuário com ID {id_usuario} não encontrado.")
             else:
-                print(f"Usuário com ID {id_usuario} não foi atualizado.")
+                print(f"\nUsuário com ID {id_usuario} não foi atualizado.")
         except pymongo.errors.OperationFailure as e:
-            print(f"Erro ao atualizar usuário: {e}")
+            print(f"\nErro ao atualizar usuário: {e}")
         except pymongo.errors.PyMongoError as e:
-            print(f"Erro de conexão com o banco de dados: {e}")
+            print(f"\nErro de conexão com o banco de dados: {e}")
     except KeyboardInterrupt:
-        print("Operação cancelada pelo usuário.")
+        print("\n\nOperação cancelada pelo usuário.")
     except EOFError:
-        print("Erro: Entrada de dados inválida.")
+        print("\nErro: Entrada de dados inválida.")
     except Exception as e:
-        print(f"Erro inesperado: {e}")
+        print(f"\nErro inesperado: {e}")
 
 def deletar_usuario():
     try:
         id_usuario = input("Digite o ID do usuário a ser deletado: ")
         if not id_usuario:
-            print("Erro: O ID do usuário é obrigatório.")
+            print("\nErro: O ID do usuário é obrigatório.")
             return
 
         try:
             ObjectId(id_usuario)
         except Exception as e:
-            print("Erro: O ID do usuário é inválido.")
+            print("\nErro: O ID do usuário é inválido.")
             return
 
         query = {"_id": ObjectId(id_usuario)}
@@ -332,17 +332,17 @@ def deletar_usuario():
             return
 
         if resultado.deleted_count == 1:
-            print(f"Usuário com ID {id_usuario} deletado com sucesso!")
+            print(f"\nUsuário com ID {id_usuario} deletado com sucesso!")
         elif resultado.deleted_count == 0:
-            print(f"Usuário com ID {id_usuario} não encontrado.")
+            print(f"\nUsuário com ID {id_usuario} não encontrado.")
         else:
-            print(f"Erro ao deletar usuário: {resultado}")
+            print(f"\nErro ao deletar usuário: {resultado}")
     except KeyboardInterrupt:
-        print("Operação cancelada pelo usuário.")
+        print("\n\nOperação cancelada pelo usuário.")
     except EOFError:
-        print("Erro: Entrada de dados inválida.")
+        print("\nErro: Entrada de dados inválida.")
     except Exception as e:
-        print(f"Erro inesperado: {e}")
+        print(f"\nErro inesperado: {e}")
 
 def emprestar_livro():
     try:
@@ -415,7 +415,7 @@ def emprestar_livro():
                 print(f"Erro ao atualizar livro: {e}")
                 return
         
-        print(f"Livro ID {livro_id} emprestado ao usuário ID {usuario_id}. Data de emprestimo: {data_emprestimo.strftime('%Y-%m-%d %H:%M:%S')}, Data de devolução: {data_devolucao.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"\nLivro ID {livro_id} emprestado ao usuário ID {usuario_id}. Data de emprestimo: {data_emprestimo.strftime('%Y-%m-%d %H:%M:%S')}, Data de devolução: {data_devolucao.strftime('%Y-%m-%d %H:%M:%S')}")
     except KeyboardInterrupt:
         print("Operação cancelada pelo usuário.")
     except EOFError:
@@ -461,11 +461,12 @@ def devolver_livro():
             return
         
         try:
-            emprestimos_collection.update_one({"_id": ObjectId(emprestimo_id)}, {"$set": {"devolvido": True}})
+            data_devolucao = datetime.now()
+            emprestimos_collection.update_one({"_id": ObjectId(emprestimo_id)}, {"$set": {"devolvido": True, "data_devolucao": data_devolucao}})
         except pymongo.errors.PyMongoError as e:
             print(f"\nErro ao atualizar empréstimo: {e}")
             return
-
+        
         try:
             livro = livros_collection.find_one({"_id": emprestimo['livro_id']})
         except pymongo.errors.PyMongoError as e:
@@ -478,8 +479,8 @@ def devolver_livro():
             except pymongo.errors.PyMongoError as e:
                 print(f"\nErro ao atualizar livro: {e}")
                 return
-            
-        print(f"\nEmpréstimo ID {emprestimo_id} finalizado e livro ID {livro['_id']} devolvido com sucesso.")
+        
+        print(f"\nEmpréstimo ID {emprestimo_id} finalizado e livro ID {livro['_id']} devolvido com sucesso na data de {data_devolucao.strftime('%Y-%m-%d %H:%M:%S')}.")
     except KeyboardInterrupt:
         print("\n\nOperação cancelada pelo usuário.")
     except EOFError:
@@ -535,14 +536,24 @@ def listar_emprestimos():
             print("Nenhum empréstimo encontrado.")  
         else:
             for emprestimo in emprestimos_lista:
-                print("\n\n------------------------")
+                print("\n------------------------")
                 print(f"ID Empréstimo: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Usuário ID: {emprestimo['usuario_id']}, Devolvido: {emprestimo['devolvido']}")
                 print("Dados do empréstimo:")
                 print(f"  Data do empréstimo: {emprestimo['data_emprestimo'].strftime('%Y-%m-%d %H:%M:%S')}")
                 print(f"  Livro: {emprestimo['livro_id']}")
                 print(f"  Usuário: {emprestimo['usuario_id']}")
                 print(f"  Devolvido: {emprestimo['devolvido']}")
-                print("------------------------\n")
+                if emprestimo['devolvido']:
+                    if 'data_devolucao' in emprestimo:
+                        print(f"  Data da devolução: {emprestimo['data_devolucao'].strftime('%Y-%m-%d %H:%M:%S')}")
+                    else:
+                        data_devolucao = datetime.now()
+                        emprestimos_collection.update_one({"_id": emprestimo['_id']}, {"$set": {"data_devolucao": data_devolucao}})
+                        print("  Data da devolução: ", data_devolucao.strftime('%Y-%m-%d %H:%M:%S'))
+                else:
+                    data_prazo_devolucao = emprestimo['data_emprestimo'] + timedelta(days=30)
+                    print(f"  Data do prazo de devolução: {data_prazo_devolucao.strftime('%Y-%m-%d %H:%M:%S')}")
+                print("------------------------")
     except KeyboardInterrupt:
         print("\n\nOperação cancelada pelo usuário.")
     except EOFError:
@@ -575,9 +586,24 @@ def consultar_emprestimos_usuario():
             print("\nNenhum empréstimo encontrado para o usuário especificado.")
         else:
             for emprestimo in emprestimos:
-                print("\n\n------------------------")
-                print(f"ID Empréstimo: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Data de Empréstimo: {emprestimo['data_emprestimo']}, Data de Devolução: {emprestimo['data_devolucao']}")
-                print("------------------------\n")
+                print("\n------------------------")
+                print(f"ID Empréstimo: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Usuário ID: {emprestimo['usuario_id']}, Devolvido: {emprestimo['devolvido']}")
+                print("Dados do empréstimo:")
+                print(f"  Data do empréstimo: {emprestimo['data_emprestimo'].strftime('%Y-%m-%d %H:%M:%S')}")
+                print(f"  Livro: {emprestimo['livro_id']}")
+                print(f"  Usuário: {emprestimo['usuario_id']}")
+                print(f"  Devolvido: {emprestimo['devolvido']}")
+                if emprestimo['devolvido']:
+                    if 'data_devolucao' in emprestimo:
+                        print(f"  Data da devolução: {emprestimo['data_devolucao'].strftime('%Y-%m-%d %H:%M:%S')}")
+                    else:
+                        data_devolucao = datetime.now()
+                        emprestimos_collection.update_one({"_id": emprestimo['_id']}, {"$set": {"data_devolucao": data_devolucao}})
+                        print("  Data da devolução: ", data_devolucao.strftime('%Y-%m-%d %H:%M:%S'))
+                else:
+                    data_prazo_devolucao = emprestimo['data_emprestimo'] + timedelta(days=30)
+                    print(f"  Data do prazo de devolução: {data_prazo_devolucao.strftime('%Y-%m-%d %H:%M:%S')}")
+                print("------------------------")
     except KeyboardInterrupt:
         print("\n\nOperação cancelada pelo usuário.")
     except EOFError:
@@ -603,7 +629,7 @@ def consultar_usuarios_emprestimos_vencidos():
             print("\nNenhum usuário com empréstimo vencido encontrado.")
         else:
             for usuario_id in usuarios_emprestimos_vencidos:
-                print(f"\nUsuário ID: {usuario_id} está com emprestimo vencido.")
+                print(f"\nUsuário ID: {usuario_id} está com emprestimos vencidos.")
                 emprestimos_vencidos_usuario = emprestimos_collection.find({
                     "usuario_id": usuario_id,
                     "data_devolução": {"$lt": data_atual},
@@ -667,7 +693,7 @@ try:
         elif opcao == '13':
             consultar_usuarios_emprestimos_vencidos()
         elif opcao == '14':
-            print("Encerrando o sistema.")
+            print("\nEncerrando o sistema.")
             break
         else:
             print("Opção inválida. Tente novamente.")
