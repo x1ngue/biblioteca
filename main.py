@@ -3,21 +3,22 @@ from bson.objectid import ObjectId # importar o ObjectId para manipular os IDs
 from datetime import datetime # importar a biblioteca datetime para trabalhar com datas
 from datetime import timedelta # importar timedelta para colocar prazo na devolução
 import configparser
+import sys
 import pymongo # importar pymongo para trabalhar com o MongoDB
 
 def main():
     while True:
         try:
             # Carrega as configurações a partir do arquivo config.ini para obter a senha do MongoDB
-            config = configparser.ConfigParser()
-            config.read('config.ini')
+            # config = configparser.ConfigParser()
+            # config.read('config.ini')
 
-            senha = config['conexao']['senha']
+            # senha = config['conexao']['senha']
 
             try:
                 # Tentativa de conexão com o MongoDB usando a URI. A senha é passada de forma dinâmica. 
-                uri = f"mongodb+srv://x1ngue:{senha}@cluster0.uwf0d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-                client = MongoClient(uri)
+                # uri = f"mongodb+srv://x1ngue:{senha}@cluster0.uwf0d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+                client = MongoClient("mongodb+srv://x1ngue:x1nguedb@cluster0.uwf0d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
                 db = client['biblioteca'] # Seleciona o banco de dados 'biblioteca'
                 db_l = client.list_database_names()
                 print("\nConexão bem-sucedida ao MongoDB!\n")
@@ -25,10 +26,11 @@ def main():
             except Exception as e:
                 # Caso a tentativa de conexão falhe, o erro será exibido e o loop reinicia
                 print("Erro ao conectar ao MongoDB:", e)
+                sys.exit()
         except KeyboardInterrupt:
             # Caso o usuário pressione Ctrl+C, o loop e encerrado
             print("\nOperação cancelada pelo usuário.")
-            exit()
+            sys.exit()
             
 # Criar a coleção 'livros' e 'usuarios' e 'emprestimos' no banco de dados 'biblioteca'
     livros_collection = db['livros']
