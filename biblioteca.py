@@ -610,13 +610,24 @@ def consultar_emprestimos_usuario():
                 if emprestimo['devolvido']:
                     if 'data_devolucao' in emprestimo:
                         print(f"  Data da devolução: '{emprestimo['data_devolucao'].strftime('%Y-%m-%d %H:%M:%S')}'.")
+                        data_prazo_devolucao = emprestimo['data_emprestimo'] + timedelta(days=30)
+                        if emprestimo['data_devolucao'] > data_prazo_devolucao:
+                            atraso = (emprestimo['data_devolucao'] - data_prazo_devolucao).days
+                            print(f"\nLivro devolvido com atraso de '{atraso}' dia(s).")
+                        else:
+                            antecedencia = (data_prazo_devolucao - emprestimo['data_devolucao']).days
+                            print(f"\nO livro foi devolvido dentro do prazo em '{emprestimo['data_devolucao'].strftime('%Y-%m-%d %H:%M:%S')}', com '{antecedencia}' dia(s) de antecedência.")
                     else:
                         data_devolucao = datetime.now()
                         emprestimos_collection.update_one({"_id": emprestimo['_id']}, {"$set": {"data_devolucao": data_devolucao}})
-                        print("  Data da devolução: ", data_devolucao.strftime('%Y-%m-%d %H:%M:%S'))
+                        print("\nData da devolução: ", data_devolucao.strftime('%Y-%m-%d %H:%M:%S'))
                 else:
                     data_prazo_devolucao = emprestimo['data_emprestimo'] + timedelta(days=30)
-                    print(f"  Data do prazo de devolução: '{data_prazo_devolucao.strftime('%Y-%m-%d %H:%M:%S')}'.")
+                    dias_restantes = (data_prazo_devolucao - datetime.now()).days
+                    if dias_restantes <= 0:
+                        print("\nDevolução pendente! Prazo de devolução expirado.")
+                    else:
+                        print(f"\nDevolução pendente! Restam '{dias_restantes}' dia(s) para o prazo de devolução.")
                 print("------------------------")
     except KeyboardInterrupt:
         print("\n\nOperação cancelada pelo usuário.")
