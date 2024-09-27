@@ -1,36 +1,41 @@
-from pymongo import MongoClient
-from bson.objectid import ObjectId
-from datetime import datetime
-from datetime import timedelta
+from pymongo import MongoClient # importar pymongo para acessar o MongoDB
+from bson.objectid import ObjectId # importar o ObjectId para manipular os IDs
+from datetime import datetime # importar a biblioteca datetime para trabalhar com datas
+from datetime import timedelta # importar timedelta para colocar prazo na devolução
 import configparser
-import pymongo
+import pymongo # importar pymongo para trabalhar com o MongoDB
 
 def main():
     while True:
         try:
+            # Carrega as configurações a partir do arquivo config.ini para obter a senha do MongoDB
             config = configparser.ConfigParser()
             config.read('config.ini')
 
             senha = config['conexao']['senha']
 
             try:
+                # Tentativa de conexão com o MongoDB usando a URI. A senha é passada de forma dinâmica. 
                 uri = f"mongodb+srv://x1ngue:{senha}@cluster0.uwf0d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
                 client = MongoClient(uri)
-                db = client['biblioteca']
+                db = client['biblioteca'] # Seleciona o banco de dados 'biblioteca'
                 db_l = client.list_database_names()
                 print("\nConexão bem-sucedida ao MongoDB!\n")
                 break
             except Exception as e:
+                # Caso a tentativa de conexão falhe, o erro será exibido e o loop reinicia
                 print("Erro ao conectar ao MongoDB:", e)
         except KeyboardInterrupt:
+            # Caso o usuário pressione Ctrl+C, o loop e encerrado
             print("\nOperação cancelada pelo usuário.")
             exit()
             
-
+# Criar a coleção 'livros' e 'usuarios' e 'emprestimos' no banco de dados 'biblioteca'
     livros_collection = db['livros']
     usuarios_collection = db['usuarios']
     emprestimos_collection = db['emprestimos']
 
+# Função para adicionar livros e solicita as informações do novo livro
     def adicionar_livro():
         try:
             titulo = input("\nDigite o título do livro: ")
@@ -91,7 +96,8 @@ def main():
 
         if not encontrado:
             print("\n\nNenhum livro encontrado.\n")
-            
+
+# Função para atualizar livros seguindo o mesmo padrão           
     def atualizar_livro():
         try:
             livro_id = input("\nDigite o ID do livro que deseja atualizar: ")
@@ -138,6 +144,7 @@ def main():
         except Exception as e:
             print(f"Erro inesperado: {e}")
 
+# Função para excluir livros seguindo o mesmo padrão
     def excluir_livro():
         try:
             livro_id = input("\nDigite o ID do livro que deseja excluir: ")
@@ -164,6 +171,7 @@ def main():
         except Exception as e:
             print(f"\nErro inesperado: {e}")
 
+# Função para cadastrar usuários seguindo o mesmo padrão
     def cadastrar_usuario():
         try:
             nome = input("\nDigite o nome do usuário: ")
@@ -220,6 +228,7 @@ def main():
         except Exception as e:
             print(f"Erro inesperado: {e}")
 
+# Função para consultar usuários seguindo o mesmo padrão
     def listar_usuarios():
         try:
             try:
@@ -259,6 +268,7 @@ def main():
         except Exception as e:
             print(f"Erro inesperado: {e}")
 
+# Função para atualizar usuários seguindo o mesmo padrão
     def atualizar_usuario():
         try:
             id_usuario = input("\nDigite o ID do usuário a ser atualizado: ")
@@ -313,6 +323,7 @@ def main():
         except Exception as e:
             print(f"\nErro inesperado: {e}")
 
+# Função para deletar usuários seguindo o mesmo padrão
     def deletar_usuario():
         try:
             id_usuario = input("\nDigite o ID do usuário a ser deletado: ")
@@ -347,6 +358,7 @@ def main():
         except Exception as e:
             print(f"\nErro inesperado: {e}")
 
+# Função para emprestar livros seguindo o mesmo padrão
     def emprestar_livro():
         try:
             livro_id = input("\nDigite o ID do livro a ser emprestado: ")
@@ -426,6 +438,7 @@ def main():
         except Exception as e:
             print(f"\nErro inesperado: {e}")
 
+# Função para devolver livros seguindo o mesmo padrão
     def devolver_livro():
         try:
             emprestimo_id = input("\nDigite o ID do empréstimo: ")
@@ -491,6 +504,7 @@ def main():
         except Exception as e:
             print(f"\nErro inesperado: {e}")
 
+# Função para pesquisar empréstimos seguindo o padrão
     def listar_emprestimos():
         try:
             data_inicial = input("\nDigite a data inicial (aaaa-mm-dd): ")
@@ -575,6 +589,7 @@ def main():
         except Exception as e:
             print(f"\nErro inesperado: {e}")
 
+    # Função para pesquisar empréstimos de um determinado usuário
     def consultar_emprestimos_usuario():
         try:
             usuario_id = input("\nDigite o ID do usuário: ")
@@ -636,6 +651,7 @@ def main():
         except Exception as e:
             print(f"\nErro inesperado: {e}")
 
+    # Função para pesquisar empréstimos vencidos
     def consultar_usuarios_emprestimos_vencidos():
         try:
             data_atual = datetime.now()
@@ -669,6 +685,7 @@ def main():
         except Exception as e:
             print(f"\nErro inesperado: {e}")
 
+    # Função para escolher uma opção
     def escolher_opcao(resposta_usuario, funcao):
         if resposta_usuario == 's':
             funcao()
@@ -678,7 +695,7 @@ def main():
             print("\nOpcão inválida. Tente novamente.")
 
     try:
-
+        # Menu inicial e escolha de opções
         while True:
             print("\nMenu Biblioteca: (utilize os números para escolher uma opção).\n")
             print("1. Adicionar Livro")
