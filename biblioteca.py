@@ -575,7 +575,7 @@ def consultar_emprestimos_usuario():
             return
         
         try:
-            emprestimos = emprestimos_collection.find({"usuario_id": ObjectId(usuario_id), "devolvido": False})
+            emprestimos = emprestimos_collection.find({"usuario_id": ObjectId(usuario_id)})
         except pymongo.errors.PyMongoError as e:
             print(f"\nErro de conexão com o banco de dados: {e}")
             return
