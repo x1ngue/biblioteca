@@ -1,1 +1,1 @@
-2 - adicionar voltar ao menu principal quando selecionar sem querer alguma opção.
+1 - Deixar a senha no código para o professor conseguir roda-lo

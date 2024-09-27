@@ -33,7 +33,7 @@ emprestimos_collection = db['emprestimos']
 
 def adicionar_livro():
     try:
-        titulo = input("Digite o título do livro: ")
+        titulo = input("\nDigite o título do livro: ")
         if not titulo.strip():
             raise ValueError("Título não pode ser vazio")
 
@@ -94,7 +94,7 @@ def listar_livros():
         
 def atualizar_livro():
     try:
-        livro_id = input("Digite o ID do livro que deseja atualizar: ")
+        livro_id = input("\nDigite o ID do livro que deseja atualizar: ")
         novos_dados = {}
         titulo = input("Novo título (deixe em branco para manter o atual): ")
         autor = input("Novo autor (deixe em branco para manter o atual): ")
@@ -140,7 +140,7 @@ def atualizar_livro():
 
 def excluir_livro():
     try:
-        livro_id = input("Digite o ID do livro que deseja excluir: ")
+        livro_id = input("\nDigite o ID do livro que deseja excluir: ")
         try:
             livro_id_obj = ObjectId(livro_id)
         except ValueError:
@@ -166,7 +166,7 @@ def excluir_livro():
 
 def cadastrar_usuario():
     try:
-        nome = input("Digite o nome do usuário: ")
+        nome = input("\nDigite o nome do usuário: ")
         if not nome:
             print("\nErro: O nome do usuário deve ser informado.")
             return
@@ -225,25 +225,25 @@ def listar_usuarios():
         try:
             usuarios = usuarios_collection.find()
         except pymongo.errors.PyMongoError as e:
-            print(f"Erro de conexão com o banco de dados: {e}")
+            print(f"\nErro de conexão com o banco de dados: {e}")
             return
 
         if usuarios is None:
-            print("Erro: Não foi possível recuperar a lista de usuários.")
+            print("\nErro: Não foi possível recuperar a lista de usuários.")
             return
 
         for usuario in usuarios:
             try:
                 if '_id' not in usuario:
-                    print("Erro: O usuário não tem ID.")
+                    print("\nErro: O usuário não tem ID.")
                     continue
 
                 if 'nome' not in usuario:
-                    print(f"Erro: O usuário '{usuario['_id']}' não tem nome.")
+                    print(f"\nErro: O usuário '{usuario['_id']}' não tem nome.")
                     continue
 
                 if 'email' not in usuario:
-                    print(f"Erro: O usuário '{usuario['_id']}' não tem e-mail.")
+                    print(f"\nErro: O usuário '{usuario['_id']}' não tem e-mail.")
                     continue
 
                 data_nascimento = usuario.get('data_nascimento', "Não informada")
@@ -253,15 +253,15 @@ def listar_usuarios():
             except Exception as e:
                 print(f"\nErro inesperado ao processar o usuário '{usuario['_id']}': {e}")
     except KeyboardInterrupt:
-        print("Operação cancelada pelo usuário.")
+        print("\nOperação cancelada pelo usuário.")
     except EOFError:
-        print("Erro: Entrada de dados inválida.")
+        print("\nErro: Entrada de dados inválida.")
     except Exception as e:
         print(f"Erro inesperado: {e}")
 
 def atualizar_usuario():
     try:
-        id_usuario = input("Digite o ID do usuário a ser atualizado: ")
+        id_usuario = input("\nDigite o ID do usuário a ser atualizado: ")
         if not id_usuario:
             print("\nErro: O ID do usuário é obrigatório.")
             return
@@ -315,7 +315,7 @@ def atualizar_usuario():
 
 def deletar_usuario():
     try:
-        id_usuario = input("Digite o ID do usuário a ser deletado: ")
+        id_usuario = input("\nDigite o ID do usuário a ser deletado: ")
         if not id_usuario:
             print("\nErro: O ID do usuário é obrigatório.")
             return
@@ -349,40 +349,40 @@ def deletar_usuario():
 
 def emprestar_livro():
     try:
-        livro_id = input("Digite o ID do livro a ser emprestado: ")
+        livro_id = input("\nDigite o ID do livro a ser emprestado: ")
         if not livro_id:
-            print("Erro: O ID do livro é obrigatório.")
+            print("\nErro: O ID do livro é obrigatório.")
             return
 
         try:
             ObjectId(livro_id)
         except ValueError:
-            print("Erro: O ID do livro é inválido.")
+            print("\nErro: O ID do livro é inválido.")
             return
 
-        usuario_id = input("Digite o ID do usuário: ")
+        usuario_id = input("\nDigite o ID do usuário: ")
         if not usuario_id:
-            print("Erro: O ID do usuário é obrigatório.")
+            print("\nErro: O ID do usuário é obrigatório.")
             return
 
         try:
             ObjectId(usuario_id)
         except ValueError:
-            print("Erro: O ID do usuário é inválido.")
+            print("\nErro: O ID do usuário é inválido.")
             return
 
         try:
             livro = livros_collection.find_one({"_id": ObjectId(livro_id)})
         except pymongo.errors.PyMongoError as e:
-            print(f"Erro de conexão com o banco de dados: {e}")
+            print(f"\nErro de conexão com o banco de dados: {e}")
             return
 
         if livro is None:
-            print(f"Livro ID '{livro_id}' não encontrado.")
+            print(f"\nLivro ID '{livro_id}' não encontrado.")
             return
 
         if not livro['disponivel'] or livro['quantidade'] <= 0:
-            print("Livro não disponível para empréstimo.")
+            print("\nLivro não disponível para empréstimo.")
             return
 
         # Add validation for loan period
@@ -400,13 +400,13 @@ def emprestar_livro():
         try:
             emprestimos_collection.insert_one(emprestimo)
         except pymongo.errors.PyMongoError as e:
-            print(f"Erro ao inserir empréstimo: {e}")
+            print(f"\nErro ao inserir empréstimo: {e}")
             return
         
         try:
             livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$inc": {"quantidade": -1}})
         except pymongo.errors.PyMongoError as e:
-            print(f"Erro ao atualizar livro: {e}")
+            print(f"\nErro ao atualizar livro: {e}")
             return
         
         livro_atualizado = livros_collection.find_one({"_id": ObjectId(livro_id)})
@@ -415,20 +415,20 @@ def emprestar_livro():
             try:
                 livros_collection.update_one({"_id": ObjectId(livro_id)}, {"$set": {"disponivel": False}})
             except pymongo.errors.PyMongoError as e:
-                print(f"Erro ao atualizar livro: {e}")
+                print(f"\nErro ao atualizar livro: {e}")
                 return
         
         print(f"\nLivro ID '{livro_id}' emprestado ao usuário ID '{usuario_id}'. Data de emprestimo: '{data_emprestimo.strftime('%Y-%m-%d %H:%M:%S')}', Data de devolução: '{data_devolucao.strftime('%Y-%m-%d %H:%M:%S')}'.")
     except KeyboardInterrupt:
-        print("Operação cancelada pelo usuário.")
+        print("\nOperação cancelada pelo usuário.")
     except EOFError:
-        print("Erro: Entrada de dados inválida. Tente novamente.")
+        print("\nErro: Entrada de dados inválida. Tente novamente.")
     except Exception as e:
-        print(f"Erro inesperado: {e}")
+        print(f"\nErro inesperado: {e}")
 
 def devolver_livro():
     try:
-        emprestimo_id = input("Digite o ID do empréstimo: ")
+        emprestimo_id = input("\nDigite o ID do empréstimo: ")
         if not emprestimo_id:
             print("\nErro: O ID do empréstimo é obrigatório.")
             return
@@ -504,7 +504,7 @@ def listar_emprestimos():
             print(f"\nErro: A data inicial é inválida. Use o formato aaaa-mm-dd.")
             return
         
-        data_final = input("Digite a data final (aaaa-mm-dd): ")
+        data_final = input("\nDigite a data final (aaaa-mm-dd): ")
         if not data_final:
             print("\nErro: A data final é obrigatória.")
             return
@@ -536,7 +536,7 @@ def listar_emprestimos():
         emprestimos_lista = list(emprestimos)
 
         if len(emprestimos_lista) == 0:
-            print("Nenhum empréstimo encontrado.")  
+            print("\nNenhum empréstimo encontrado.")  
         else:
             for emprestimo in emprestimos_lista:
                 print("\n------------------------")
@@ -577,7 +577,7 @@ def listar_emprestimos():
 
 def consultar_emprestimos_usuario():
     try:
-        usuario_id = input("Digite o ID do usuário: ")
+        usuario_id = input("\nDigite o ID do usuário: ")
         if not usuario_id:
             print("\nErro: O ID do usuário é obrigatório.")
             return
@@ -669,6 +669,13 @@ def consultar_usuarios_emprestimos_vencidos():
     except Exception as e:
         print(f"\nErro inesperado: {e}")
 
+def escolher_opcao(resposta_usuario, funcao):
+    if resposta_usuario == 's':
+        funcao()
+    elif resposta_usuario == 'n':
+        print("\nVoltando ao menu principal.")
+    else:
+        print("\nOpcão inválida. Tente novamente.")
 
 try:
 
@@ -692,34 +699,80 @@ try:
         opcao = input("\nEscolha uma opção: ")
 
         if opcao == '1':
-            adicionar_livro()
+            print("\nVocê selecionou a opção 'Adicionar Livro'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            escolher_opcao(resposta, adicionar_livro)
+                
         elif opcao == '2':
-            listar_livros()
+            print("\nVocê selecionou a opção 'Listar Livros'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            escolher_opcao(resposta, listar_livros)
+
         elif opcao == '3':
-            atualizar_livro()
+            print("\nVocê selecionou a opção 'Atualizar Livro'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            escolher_opcao(resposta, atualizar_livro)
+
         elif opcao == '4':
-            excluir_livro()
+            print("\nVocê selecionou a opção 'Excluir Livro'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            escolher_opcao(resposta, excluir_livro)
+
         elif opcao == '5':
-            cadastrar_usuario()
+            print("\nVocê selecionou a opção 'Cadastrar Usuário'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            escolher_opcao(resposta, cadastrar_usuario)
+
         elif opcao == '6':
-            listar_usuarios()
+            print("\nVocê selecionou a opção 'Listar Usuários'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            escolher_opcao(resposta, listar_usuarios)
+
         elif opcao == '7':
-            atualizar_usuario()
+            print("\nVocê selecionou a opção 'Atualizar Usuário'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            escolher_opcao(resposta, atualizar_usuario)
+
         elif opcao == '8':
-            deletar_usuario()
+            print("\nVocê selecionou a opção 'Deletar Usuário'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            escolher_opcao(resposta, deletar_usuario)
+
         elif opcao == '9':
-            emprestar_livro()
+            print("\nVocê selecionou a opção 'Emprestar Livro'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            escolher_opcao(resposta, emprestar_livro)
+
         elif opcao == '10':
-            devolver_livro()
+            print("\nVocê selecionou a opção 'Devolver Livro'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            escolher_opcao(resposta, devolver_livro)
+
         elif opcao == '11':
-            listar_emprestimos()
+            print("\nVocê selecionou a opção 'Listar Empréstimos'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            escolher_opcao(resposta, listar_emprestimos)
+
         elif opcao == '12':
-            consultar_emprestimos_usuario()
+            print("\nVocê selecionou a opção 'Consultar Empréstimo por Usuário'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            escolher_opcao(resposta, consultar_emprestimos_usuario)
+
         elif opcao == '13':
-            consultar_usuarios_emprestimos_vencidos()
+            print("\nVocê selecionou a opção 'Listar Usuários com Empréstimos Vencidos'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            escolher_opcao(resposta, consultar_usuarios_emprestimos_vencidos)
+
         elif opcao == '14':
-            print("\nEncerrando o sistema.")
-            break
+            print("\nVocê selecionou a opção 'Sair'. Deseja continuar? (s/n)\n>> ", end='')
+            resposta = input().lower()
+            if resposta == 's':
+                print("\nEncerrando o sistema.\n")
+                break
+            elif resposta == 'n':
+                print("\nVoltando ao menu principal")
+            else:
+                print("\nOpção inválida. Tente novamente.")
         else:
             print("Opção inválida. Tente novamente.")
 
