@@ -58,7 +58,7 @@ def adicionar_livro():
             raise ValueError("Quantidade de exemplares não pode ser negativa")
 
         if livros_collection.find_one({"isbn": isbn}):
-            raise ValueError(f"Erro: Já existe um livro cadastrado com o ISBN {isbn}.")
+            raise ValueError(f"\nErro: Já existe um livro cadastrado com o ISBN '{isbn}'.")
 
         livro = {
             "titulo": titulo,
@@ -84,8 +84,8 @@ def listar_livros():
 
     encontrado = False
     for livro in livros:
-        print(f"\nID: {livro['_id']}, Título: {livro['titulo']}, Autor: {livro['autor']}, Gênero: {livro['genero']}, "
-            f"Ano: {livro['ano']}, ISBN: {livro['isbn']}, Quantidade: {livro['quantidade']}, Disponível: {livro['disponivel']}.")
+        print(f"\nID: '{livro['_id']}', Título: '{livro['titulo']}', Autor: '{livro['autor']}', Gênero: '{livro['genero']}', "
+            f"Ano: '{livro['ano']}', ISBN: '{livro['isbn']}', Quantidade: '{livro['quantidade']}', Disponível: '{livro['disponivel']}'.")
         
         encontrado = True
 
@@ -132,7 +132,7 @@ def atualizar_livro():
         if resultado.matched_count == 0:
             print("Erro: O livro não foi encontrado.")
         else:
-            print(f"\nLivro ID {livro_id} atualizado com sucesso.")
+            print(f"\nLivro ID '{livro_id}' atualizado com sucesso.")
     except pymongo.errors.PyMongoError as e:
         print(f"Erro d conexão com o banco de dados: {e}")
     except Exception as e:
@@ -152,7 +152,7 @@ def excluir_livro():
             if resultado.deleted_count == 0:
                 print("\nErro: O livro não foi encontrado.")
             else:
-                print(f"\nLivro ID {livro_id} excluído com sucesso.")
+                print(f"\nLivro ID '{livro_id}' excluído com sucesso.")
         except pymongo.errors.PyMongoError as e:
             print(f"\nErro d conexão com o banco de dados: {e}")
         except Exception as e:
@@ -189,8 +189,11 @@ def cadastrar_usuario():
             return
         
         try:
+            if usuarios_collection.find_one({"email": email}):
+                print(f"\nErro: Já existe um usuário cadastrado com o email '{email}'.")
+                return
             if usuarios_collection.find_one({"documento": documento}):
-                print(f"\nErro: Já existe um usuário cadastrado com o documento {documento}.")
+                print(f"\nErro: Já existe um usuário cadastrado com o documento '{documento}'.")
                 return
         except pymongo.errors.PyMongoError as e:
             print(f"\nErro d conexão com o banco de dados: {e}")
@@ -236,19 +239,19 @@ def listar_usuarios():
                     continue
 
                 if 'nome' not in usuario:
-                    print(f"Erro: O usuário {usuario['_id']} não tem nome.")
+                    print(f"Erro: O usuário '{usuario['_id']}' não tem nome.")
                     continue
 
                 if 'email' not in usuario:
-                    print(f"Erro: O usuário {usuario['_id']} não tem e-mail.")
+                    print(f"Erro: O usuário '{usuario['_id']}' não tem e-mail.")
                     continue
 
                 data_nascimento = usuario.get('data_nascimento', "Não informada")
                 documento = usuario.get('documento', "Não informado")
 
-                print(f"\nID: {usuario['_id']}, Nome: {usuario['nome']}, E-mail: {usuario['email']}, Data de Nascimento: {data_nascimento}, Documento: {documento}.")
+                print(f"\nID: '{usuario['_id']}', Nome: '{usuario['nome']}', E-mail: '{usuario['email']}', Data de Nascimento: '{data_nascimento}', Documento: '{documento}'.")
             except Exception as e:
-                print(f"Erro inesperado ao processar o usuário {usuario['_id']}: {e}")
+                print(f"\nErro inesperado ao processar o usuário '{usuario['_id']}': {e}")
     except KeyboardInterrupt:
         print("Operação cancelada pelo usuário.")
     except EOFError:
@@ -294,11 +297,11 @@ def atualizar_usuario():
         try:
             result = usuarios_collection.update_one(query, update)
             if result.modified_count == 1:
-                print(f"\nUsuário com ID {id_usuario} atualizado com sucesso!")
+                print(f"\nUsuário com ID '{id_usuario}' atualizado com sucesso!")
             elif result.matched_count == 0:
-                print(f"\nUsuário com ID {id_usuario} não encontrado.")
+                print(f"\nUsuário com ID '{id_usuario}' não encontrado.")
             else:
-                print(f"\nUsuário com ID {id_usuario} não foi atualizado.")
+                print(f"\nUsuário com ID '{id_usuario}' não foi atualizado.")
         except pymongo.errors.OperationFailure as e:
             print(f"\nErro ao atualizar usuário: {e}")
         except pymongo.errors.PyMongoError as e:
@@ -332,11 +335,11 @@ def deletar_usuario():
             return
 
         if resultado.deleted_count == 1:
-            print(f"\nUsuário com ID {id_usuario} deletado com sucesso!")
+            print(f"\nUsuário com ID '{id_usuario}' deletado com sucesso!")
         elif resultado.deleted_count == 0:
-            print(f"\nUsuário com ID {id_usuario} não encontrado.")
+            print(f"\nUsuário com ID '{id_usuario}' não encontrado.")
         else:
-            print(f"\nErro ao deletar usuário: {resultado}")
+            print(f"\nErro ao deletar usuário: '{resultado}'.")
     except KeyboardInterrupt:
         print("\n\nOperação cancelada pelo usuário.")
     except EOFError:
@@ -375,7 +378,7 @@ def emprestar_livro():
             return
 
         if livro is None:
-            print(f"Livro ID {livro_id} não encontrado.")
+            print(f"Livro ID '{livro_id}' não encontrado.")
             return
 
         if not livro['disponivel'] or livro['quantidade'] <= 0:
@@ -415,7 +418,7 @@ def emprestar_livro():
                 print(f"Erro ao atualizar livro: {e}")
                 return
         
-        print(f"\nLivro ID {livro_id} emprestado ao usuário ID {usuario_id}. Data de emprestimo: {data_emprestimo.strftime('%Y-%m-%d %H:%M:%S')}, Data de devolução: {data_devolucao.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"\nLivro ID '{livro_id}' emprestado ao usuário ID '{usuario_id}'. Data de emprestimo: '{data_emprestimo.strftime('%Y-%m-%d %H:%M:%S')}', Data de devolução: '{data_devolucao.strftime('%Y-%m-%d %H:%M:%S')}'.")
     except KeyboardInterrupt:
         print("Operação cancelada pelo usuário.")
     except EOFError:
@@ -443,11 +446,11 @@ def devolver_livro():
             return
         
         if emprestimo is None:
-            print(f"\nEmpréstimo ID {emprestimo_id} não encontrado.")
+            print(f"\nEmpréstimo ID '{emprestimo_id}' não encontrado.")
             return
         
         if emprestimo['devolvido']:
-            print(f"\nEmpréstimo ID {emprestimo_id} já foi finalizado.")
+            print(f"\nEmpréstimo ID '{emprestimo_id}' já foi finalizado.")
             return
         
         if not emprestimo['devolvido']:
@@ -480,7 +483,7 @@ def devolver_livro():
                 print(f"\nErro ao atualizar livro: {e}")
                 return
         
-        print(f"\nEmpréstimo ID {emprestimo_id} finalizado e livro ID {livro['_id']} devolvido com sucesso na data de {data_devolucao.strftime('%Y-%m-%d %H:%M:%S')}.")
+        print(f"\nEmpréstimo ID '{emprestimo_id}' finalizado e livro ID '{livro['_id']}' devolvido com sucesso na data de '{data_devolucao.strftime('%Y-%m-%d %H:%M:%S')}'.")
     except KeyboardInterrupt:
         print("\n\nOperação cancelada pelo usuário.")
     except EOFError:
@@ -537,22 +540,33 @@ def listar_emprestimos():
         else:
             for emprestimo in emprestimos_lista:
                 print("\n------------------------")
-                print(f"ID Empréstimo: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Usuário ID: {emprestimo['usuario_id']}, Devolvido: {emprestimo['devolvido']}")
+                print(f"ID Empréstimo: '{emprestimo['_id']}', Livro ID: '{emprestimo['livro_id']}', Usuário ID: '{emprestimo['usuario_id']}', Devolvido: '{emprestimo['devolvido']}'.")
                 print("Dados do empréstimo:")
-                print(f"  Data do empréstimo: {emprestimo['data_emprestimo'].strftime('%Y-%m-%d %H:%M:%S')}")
-                print(f"  Livro: {emprestimo['livro_id']}")
-                print(f"  Usuário: {emprestimo['usuario_id']}")
-                print(f"  Devolvido: {emprestimo['devolvido']}")
+                print(f"  Data do empréstimo: '{emprestimo['data_emprestimo'].strftime('%Y-%m-%d %H:%M:%S')}'.")
+                print(f"  Livro: '{emprestimo['livro_id']}'.")
+                print(f"  Usuário: '{emprestimo['usuario_id']}'.")
+                print(f"  Devolvido: '{emprestimo['devolvido']}'.")
                 if emprestimo['devolvido']:
                     if 'data_devolucao' in emprestimo:
-                        print(f"  Data da devolução: {emprestimo['data_devolucao'].strftime('%Y-%m-%d %H:%M:%S')}")
+                        print(f"  Data da devolução: '{emprestimo['data_devolucao'].strftime('%Y-%m-%d %H:%M:%S')}'.")
+                        data_prazo_devolucao = emprestimo['data_emprestimo'] + timedelta(days=30)
+                        if emprestimo['data_devolucao'] > data_prazo_devolucao:
+                            atraso = (emprestimo['data_devolucao'] - data_prazo_devolucao).days
+                            print(f"\nLivro devolvido com atraso de '{atraso}' dia(s).")
+                        else:
+                            antecedencia = (data_prazo_devolucao - emprestimo['data_devolucao']).days
+                            print(f"\nO livro foi devolvido dentro do prazo em '{emprestimo['data_devolucao'].strftime('%Y-%m-%d %H:%M:%S')}', com '{antecedencia}' dia(s) de antecedência.")
                     else:
                         data_devolucao = datetime.now()
                         emprestimos_collection.update_one({"_id": emprestimo['_id']}, {"$set": {"data_devolucao": data_devolucao}})
-                        print("  Data da devolução: ", data_devolucao.strftime('%Y-%m-%d %H:%M:%S'))
+                        print("\nData da devolução: ", data_devolucao.strftime('%Y-%m-%d %H:%M:%S'))
                 else:
                     data_prazo_devolucao = emprestimo['data_emprestimo'] + timedelta(days=30)
-                    print(f"  Data do prazo de devolução: {data_prazo_devolucao.strftime('%Y-%m-%d %H:%M:%S')}")
+                    dias_restantes = (data_prazo_devolucao - datetime.now()).days
+                    if dias_restantes <= 0:
+                        print("\nDevolução pendente! Prazo de devolução expirado.")
+                    else:
+                        print(f"\nDevolução pendente! Restam '{dias_restantes}' dia(s) para o prazo de devolução.")
                 print("------------------------")
     except KeyboardInterrupt:
         print("\n\nOperação cancelada pelo usuário.")
@@ -587,22 +601,22 @@ def consultar_emprestimos_usuario():
         else:
             for emprestimo in emprestimos:
                 print("\n------------------------")
-                print(f"ID Empréstimo: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Usuário ID: {emprestimo['usuario_id']}, Devolvido: {emprestimo['devolvido']}")
+                print(f"ID Empréstimo: '{emprestimo['_id']}', Livro ID: '{emprestimo['livro_id']}', Usuário ID: '{emprestimo['usuario_id']}', Devolvido: '{emprestimo['devolvido']}'.")
                 print("Dados do empréstimo:")
-                print(f"  Data do empréstimo: {emprestimo['data_emprestimo'].strftime('%Y-%m-%d %H:%M:%S')}")
-                print(f"  Livro: {emprestimo['livro_id']}")
-                print(f"  Usuário: {emprestimo['usuario_id']}")
-                print(f"  Devolvido: {emprestimo['devolvido']}")
+                print(f"  Data do empréstimo: '{emprestimo['data_emprestimo'].strftime('%Y-%m-%d %H:%M:%S')}'.")
+                print(f"  Livro: '{emprestimo['livro_id']}'.")
+                print(f"  Usuário: '{emprestimo['usuario_id']}'.")
+                print(f"  Devolvido: '{emprestimo['devolvido']}'.")
                 if emprestimo['devolvido']:
                     if 'data_devolucao' in emprestimo:
-                        print(f"  Data da devolução: {emprestimo['data_devolucao'].strftime('%Y-%m-%d %H:%M:%S')}")
+                        print(f"  Data da devolução: '{emprestimo['data_devolucao'].strftime('%Y-%m-%d %H:%M:%S')}'.")
                     else:
                         data_devolucao = datetime.now()
                         emprestimos_collection.update_one({"_id": emprestimo['_id']}, {"$set": {"data_devolucao": data_devolucao}})
                         print("  Data da devolução: ", data_devolucao.strftime('%Y-%m-%d %H:%M:%S'))
                 else:
                     data_prazo_devolucao = emprestimo['data_emprestimo'] + timedelta(days=30)
-                    print(f"  Data do prazo de devolução: {data_prazo_devolucao.strftime('%Y-%m-%d %H:%M:%S')}")
+                    print(f"  Data do prazo de devolução: '{data_prazo_devolucao.strftime('%Y-%m-%d %H:%M:%S')}'.")
                 print("------------------------")
     except KeyboardInterrupt:
         print("\n\nOperação cancelada pelo usuário.")
@@ -629,14 +643,14 @@ def consultar_usuarios_emprestimos_vencidos():
             print("\nNenhum usuário com empréstimo vencido encontrado.")
         else:
             for usuario_id in usuarios_emprestimos_vencidos:
-                print(f"\nUsuário ID: {usuario_id} está com emprestimos vencidos.")
+                print(f"\nUsuário ID: '{usuario_id}' está com emprestimos vencidos.")
                 emprestimos_vencidos_usuario = emprestimos_collection.find({
                     "usuario_id": usuario_id,
                     "data_devolução": {"$lt": data_atual},
                     "devolvido": False
                 })
                 for emprestimo in emprestimos_vencidos_usuario:
-                    print(f"  - Empréstimo ID: {emprestimo['_id']}, Livro ID: {emprestimo['livro_id']}, Data de Empréstimo: {emprestimo['data_emprestimo']}, Data de Devolução: {emprestimo['data_devolucao']}")
+                    print(f"  - Empréstimo ID: '{emprestimo['_id']}', Livro ID: '{emprestimo['livro_id']}', Data de Empréstimo: '{emprestimo['data_emprestimo']}', Data de Devolução: '{emprestimo['data_devolucao']}'.")
     except KeyboardInterrupt:
         print("\n\nOperação cancelada pelo usuário.")
     except EOFError:
